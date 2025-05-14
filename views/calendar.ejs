@@ -1,0 +1,82 @@
+<!-- views/calendar.ejs -->
+<%
+  const pageCss = ['events', 'calendar'];
+  const pageScripts = ['calendar'];
+%>
+
+<%- include('includes/head', { pageCss }) %>
+<%- include('includes/nav') %>
+<%- include('includes/header', { description: 'Visualiza los próximos eventos en nuestro calendario.' }) %>
+
+<main class="calendar-page">
+  <div class="container">
+    <div class="calendar-controls">
+      <div class="month-navigation">
+        <button id="prev-month" class="btn btn-outline">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          Mes Anterior
+        </button>
+        
+        <h2 id="current-month">Cargando...</h2>
+        
+        <button id="next-month" class="btn btn-outline">
+          Mes Siguiente
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
+      
+      <div class="view-controls">
+        <button id="month-view" class="btn btn-primary active">Vista Mensual</button>
+        <button id="list-view" class="btn btn-outline">Vista de Lista</button>
+      </div>
+    </div>
+    
+    <div class="calendar-container">
+      <div id="month-view-container" class="view-container active">
+        <div class="calendar-grid">
+          <div class="calendar-header">
+            <div class="day-label">Domingo</div>
+            <div class="day-label">Lunes</div>
+            <div class="day-label">Martes</div>
+            <div class="day-label">Miércoles</div>
+            <div class="day-label">Jueves</div>
+            <div class="day-label">Viernes</div>
+            <div class="day-label">Sábado</div>
+          </div>
+          
+          <div id="calendar-days" class="calendar-days">
+            <!-- Calendar days will be inserted here via JavaScript -->
+            <div class="loading">Cargando calendario...</div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="list-view-container" class="view-container">
+        <div id="events-list" class="events-list">
+          <!-- Events list will be inserted here via JavaScript -->
+          <div class="loading">Cargando eventos...</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Event details modal -->
+    <div id="event-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modal-title">Título del Evento</h2>
+          <button type="button" class="close-modal">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="modal-body" id="modal-content">
+          <!-- Event details will be inserted here -->
+        </div>
+        <div class="modal-footer">
+          <a id="event-link" href="#" class="btn btn-primary">Ver Detalles del Evento</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('includes/footer', { pageScripts }) %>

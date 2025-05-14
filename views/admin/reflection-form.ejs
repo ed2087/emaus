@@ -1,0 +1,171 @@
+<!-- views/admin/reflection-form.ejs -->
+<%
+  const pageCss = ['cms', 'cms-reflection-form'];
+  const pageScripts = ['cms/cmsReflections'];
+%>
+
+<%- include('../includes/head', { pageCss }) %>
+
+<div class="admin-layout">
+  <!-- Admin sidebar (omitted for brevity) -->
+  <%- include('../includes/admin-sidebar') %>
+  <!-- Admin content -->
+  <main class="admin-content">
+    <header class="admin-header">
+      <h1><%= reflection ? 'Editar Reflexión' : 'Añadir Nueva Reflexión' %></h1>
+      <div class="header-actions">
+        <a href="/admin/reflections" class="btn btn-outline">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Volver a Reflexiones
+        </a>
+      </div>
+    </header>
+    
+    <div class="content-container">
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-error">
+          <%= error %>
+        </div>
+      <% } %>
+      
+      <form action="<%= reflection ? '/admin/reflections/' + reflection._id + '?_method=PUT' : '/admin/reflections' %>" method="POST" class="form-layout">
+        <div class="form-grid">
+          <div class="form-main">
+            <div class="form-section">
+              <div class="form-group">
+                <label for="title">Título</label>
+                <input 
+                  type="text" 
+                  id="title" 
+                  name="title" 
+                  value="<%= reflection ? reflection.title : '' %>" 
+                  required
+                  maxlength="200"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="description">Descripción</label>
+                <textarea 
+                  id="description" 
+                  name="description" 
+                  required
+                  maxlength="500"
+                ><%= reflection ? reflection.description : '' %></textarea>
+                <div class="input-help">Resumen breve (máximo 500 caracteres)</div>
+              </div>
+              
+              <div class="form-group">
+                <label for="body">Contenido</label>
+                <textarea 
+                  id="body" 
+                  name="body" 
+                  class="editor-textarea" 
+                  required
+                  minlength="50"
+                ><%= reflection ? reflection.body : '' %></textarea>
+                <div class="input-help">
+                  <div class="markdown-help">
+                    Markdown soportado: **negrita**, *cursiva*, [enlace](url), ![imagen](url), # Encabezado, > Cita, ` código `
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-sidebar">
+            <div class="form-section">
+              <div class="form-group">
+                <label for="category">Categoría</label>
+                <select id="category" name="category" required>
+                  <option value="">Selecciona una categoría</option>
+                  <option value="Oración" <%= reflection && reflection.category === 'Oración' ? 'selected' : '' %>>Oración</option>
+                  <option value="Comunidad" <%= reflection && reflection.category === 'Comunidad' ? 'selected' : '' %>>Comunidad</option>
+                  <option value="Conversión" <%= reflection && reflection.category === 'Conversión' ? 'selected' : '' %>>Conversión</option>
+                  <option value="Biblia" <%= reflection && reflection.category === 'Biblia' ? 'selected' : '' %>>Biblia</option>
+                  <option value="Retiros" <%= reflection && reflection.category === 'Retiros' ? 'selected' : '' %>>Retiros</option>
+                  <option value="Otro" <%= reflection && reflection.category === 'Otro' ? 'selected' : '' %>>Otro</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="tags">Etiquetas</label>
+                <input 
+                  type="text" 
+                  id="tags" 
+                  name="tags" 
+                  value="<%= reflection && reflection.tags ? reflection.tags.join(', ') : '' %>" 
+                >
+                <div class="input-help">Etiquetas separadas por comas</div>
+              </div>
+              
+              <div class="form-group">
+                <label for="images">Imágenes</label>
+                <textarea 
+                  id="images" 
+                  name="images" 
+                  rows="3"
+                ><%= reflection && reflection.images ? reflection.images.join('\n') : '' %></textarea>
+                <div class="input-help">Una URL por línea (máximo 3)</div>
+              </div>
+              
+              <div class="form-group">
+                <label for="author">Autor</label>
+                <input 
+                  type="text" 
+                  id="author" 
+                  name="author" 
+                  value="<%= reflection ? reflection.author : (user.firstName + ' ' + user.lastName) %>" 
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="bodyFormat">Formato</label>
+                <select id="bodyFormat" name="bodyFormat">
+                  <option value="markdown" <%= reflection && reflection.bodyFormat === 'markdown' ? 'selected' : '' %>>Markdown</option>
+                  <option value="plain" <%= reflection && reflection.bodyFormat === 'plain' ? 'selected' : '' %>>Texto Plano</option>
+                  <option value="html" <%= reflection && reflection.bodyFormat === 'html' ? 'selected' : '' %>>HTML</option>
+                </select>
+              </div>
+              
+              <div class="form-group checkbox-group">
+                <label>
+                  <input 
+                    type="checkbox" 
+                    name="isPublished" 
+                    <%= reflection && reflection.isPublished ? 'checked' : '' %>
+                  >
+                  Publicar
+                </label>
+                <div class="input-help">Cuando no está marcado, se guarda como borrador</div>
+              </div>
+              
+              <div class="form-group checkbox-group">
+                <label>
+                  <input 
+                    type="checkbox" 
+                    name="isPinned" 
+                    <%= reflection && reflection.isPinned ? 'checked' : '' %>
+                  >
+                  Fijar en la Parte Superior
+                </label>
+                <div class="input-help">Destacado en la página de inicio y listados</div>
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">
+                <%= reflection ? 'Actualizar Reflexión' : 'Publicar Reflexión' %>
+              </button>
+              <% if (reflection) { %>
+                <a href="/reflections/<%= reflection._id %>" class="btn btn-outline">Ver</a>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<%- include('../includes/footer', { pageScripts }) %>

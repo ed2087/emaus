@@ -1,0 +1,120 @@
+<!-- views/forms/submit-reflection.ejs -->
+<%
+  const pageCss = ['forms', 'markdown-editor'];
+  const pageScripts = ['reflectionSubmit'];
+%>
+
+<%- include('../includes/head', { pageCss }) %>
+<%- include('../includes/nav') %>
+<%- include('../includes/header', { description: 'Comparte tus ideas espirituales y experiencias con la comunidad.' }) %>
+
+<main class="form-page">
+  <div class="container">
+    <div class="form-container">
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-error">
+          <%= error %>
+        </div>
+      <% } %>
+      
+      <form action="/reflections/submit" method="POST" class="content-form">
+        <div class="form-group">
+          <label for="title">Título</label>
+          <input 
+            type="text" 
+            id="title" 
+            name="title" 
+            value="<%= typeof formData !== 'undefined' ? formData.title || '' : '' %>" 
+            required
+            maxlength="200"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="description">Descripción</label>
+          <textarea 
+            id="description" 
+            name="description" 
+            required
+            maxlength="500"
+          ><%= typeof formData !== 'undefined' ? formData.description || '' : '' %></textarea>
+          <div class="input-help">Resumen breve (máximo 500 caracteres)</div>
+        </div>
+        
+        <div class="form-group">
+          <label for="body">Contenido</label>
+          <textarea 
+            id="body" 
+            name="body" 
+            class="editor-textarea" 
+            required
+            minlength="50"
+          ><%= typeof formData !== 'undefined' ? formData.body || '' : '' %></textarea>
+          <div class="input-help">
+            <div class="markdown-help">
+              Markdown soportado: **negrita**, *cursiva*, [enlace](url), ![imagen](url), # Encabezado, > Cita, ` código `
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="category">Categoría</label>
+            <select id="category" name="category" required>
+              <option value="">Selecciona una categoría</option>
+              <option value="Oración" <%= typeof formData !== 'undefined' && formData.category === 'Oración' ? 'selected' : '' %>>Oración</option>
+              <option value="Comunidad" <%= typeof formData !== 'undefined' && formData.category === 'Comunidad' ? 'selected' : '' %>>Comunidad</option>
+              <option value="Conversión" <%= typeof formData !== 'undefined' && formData.category === 'Conversión' ? 'selected' : '' %>>Conversión</option>
+              <option value="Biblia" <%= typeof formData !== 'undefined' && formData.category === 'Biblia' ? 'selected' : '' %>>Biblia</option>
+              <option value="Retiros" <%= typeof formData !== 'undefined' && formData.category === 'Retiros' ? 'selected' : '' %>>Retiros</option>
+              <option value="Otro" <%= typeof formData !== 'undefined' && formData.category === 'Otro' ? 'selected' : '' %>>Otro</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="tags">Etiquetas</label>
+            <input 
+              type="text" 
+              id="tags" 
+              name="tags" 
+              value="<%= typeof formData !== 'undefined' ? formData.tags || '' : '' %>" 
+            >
+            <div class="input-help">Etiquetas separadas por comas</div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="images">Imágenes</label>
+          <textarea 
+            id="images" 
+            name="images" 
+            rows="3"
+          ><%= typeof formData !== 'undefined' ? formData.images || '' : '' %></textarea>
+          <div class="input-help">Una URL por línea (máximo 3)</div>
+        </div>
+        
+        <div class="form-group">
+          <label for="author">Tu Nombre (opcional)</label>
+          <input 
+            type="text" 
+            id="author" 
+            name="author" 
+            value="<%= typeof formData !== 'undefined' ? formData.author || '' : (user ? user.firstName + ' ' + user.lastName : '') %>" 
+          >
+          <div class="input-help">Dejar en blanco para enviar anónimamente</div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Enviar Reflexión</button>
+          <a href="/reflections" class="btn btn-outline">Cancelar</a>
+        </div>
+        
+        <div class="form-info">
+          <p>Tu envío será revisado por un moderador antes de publicarse. ¡Gracias por compartir!</p>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<%- include('../includes/footer', { pageScripts }) %>

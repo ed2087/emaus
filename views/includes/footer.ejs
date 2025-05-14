@@ -1,0 +1,63 @@
+<!-- views/includes/footer.ejs -->
+<footer class="main-footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Acerca de Emaús</h3>
+        <p>Una comunidad enfocada en el crecimiento espiritual y conexiones significativas.</p>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Enlaces Rápidos</h3>
+        <ul>
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/reflections">Reflexiones</a></li>
+          <li><a href="/testimonials">Testimonios</a></li>
+          <li><a href="/events">Eventos</a></li>
+          <li><a href="/announcements">Anuncios</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Contribuir</h3>
+        <ul>
+          <li><a href="/reflections/submit">Enviar Reflexión</a></li>
+          <li><a href="/testimonials/submit">Compartir Testimonio</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Conéctate Con Nosotros</h3>
+        <div class="social-links">
+          <a href="#" aria-label="Facebook">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+          </a>
+          <a href="#" aria-label="Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          </a>
+          <a href="#" aria-label="YouTube">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; <%= new Date().getFullYear() %> Comunidad Emaús. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Global scripts -->
+<script src="/js/global.js"></script>
+<script src="/js/nav.js"></script>
+
+<!-- Page-specific scripts -->
+<% if (typeof pageScripts !== 'undefined' && pageScripts) { %>
+  <% pageScripts.forEach(script => { %>
+    <script src="/js/<%= script %>.js"></script>
+  <% }) %>
+<% } %>
+
+</body>
+</html>

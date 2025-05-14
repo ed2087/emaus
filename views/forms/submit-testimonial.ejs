@@ -1,0 +1,86 @@
+<!-- views/forms/submit-testimonial.ejs -->
+<%
+  const pageCss = ['forms'];
+  const pageScripts = ['testimonialSubmit'];
+%>
+
+<%- include('../includes/head', { pageCss }) %>
+<%- include('../includes/nav') %>
+<%- include('../includes/header', { description: 'Comparte tu experiencia y testimonio con nuestra comunidad.' }) %>
+
+<main class="form-page">
+  <div class="container">
+    <div class="form-container">
+      <% if (!user) { %>
+        <div class="alert alert-info">
+          <p>Necesitas <a href="/auth/login?redirectTo=/testimonials/submit">iniciar sesión</a> para enviar un testimonio.</p>
+        </div>
+      <% } else { %>
+        <% if (typeof error !== 'undefined' && error) { %>
+          <div class="alert alert-error">
+            <%= error %>
+          </div>
+        <% } %>
+        
+        <form action="/testimonials/submit" method="POST" class="content-form">
+          <div class="form-group">
+            <label for="title">Título</label>
+            <input 
+              type="text" 
+              id="title" 
+              name="title" 
+              value="<%= typeof formData !== 'undefined' ? formData.title || '' : '' %>" 
+              required
+              maxlength="200"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="description">Descripción Breve</label>
+            <textarea 
+              id="description" 
+              name="description" 
+              required
+              maxlength="500"
+            ><%= typeof formData !== 'undefined' ? formData.description || '' : '' %></textarea>
+            <div class="input-help">Un resumen corto de tu testimonio (máximo 500 caracteres)</div>
+          </div>
+          
+          <div class="form-group">
+            <label for="body">Tu Testimonio</label>
+            <textarea 
+              id="body" 
+              name="body" 
+              class="editor-textarea" 
+              required
+              minlength="50"
+            ><%= typeof formData !== 'undefined' ? formData.body || '' : '' %></textarea>
+            <div class="input-help">Comparte tu experiencia en detalle (mínimo 50 caracteres)</div>
+          </div>
+          
+          <div class="form-group">
+            <label for="image">URL de Imagen de Perfil (opcional)</label>
+            <input 
+              type="url" 
+              id="image" 
+              name="image" 
+              value="<%= typeof formData !== 'undefined' ? formData.image || '' : '' %>" 
+            >
+            <div class="input-help">Introduce una URL a una imagen tuya</div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Enviar Testimonio</button>
+            <a href="/testimonials" class="btn btn-outline">Cancelar</a>
+          </div>
+          
+          <div class="form-info">
+            <p>Tu testimonio será revisado por un moderador antes de ser publicado. ¡Gracias por compartir tu experiencia!</p>
+          </div>
+        </form>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<%- include('../includes/footer', { pageScripts }) %>

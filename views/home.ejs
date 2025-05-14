@@ -1,0 +1,69 @@
+<!-- views/home.ejs -->
+<%
+  const pageCss = ['home'];
+  const pageScripts = ['home'];
+%>
+
+<%- include('includes/head', { pageCss }) %>
+
+<%- include('includes/nav') %>
+
+<main class="home-page">
+  <section class="hero">
+    <div class="container">
+      <h1>Bienvenido a Emaús</h1>
+      <p>Una comunidad para el crecimiento espiritual, la reflexión y la conexión.</p>
+      <div class="hero-buttons">
+        <a href="/reflections" class="btn btn-primary">Explorar Reflexiones</a>
+        <a href="/events" class="btn btn-secondary">Próximos Eventos</a>
+      </div>
+    </div>
+  </section>
+  
+  <section class="announcements-section">
+    <div class="container">
+      <h2>Anuncios</h2>
+      <div class="announcement-cards" id="latest-announcements">
+        <div class="loading">Cargando anuncios...</div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="reflections-section">
+    <div class="container">
+      <h2>Reflexiones Populares</h2>
+      <div class="reflection-cards" id="popular-reflections">
+        <div class="loading">Cargando reflexiones...</div>
+      </div>
+      <div class="section-action">
+        <a href="/reflections" class="btn btn-outline">Ver Todas las Reflexiones</a>
+      </div>
+    </div>
+  </section>
+  
+  <section class="events-section">
+    <div class="container">
+      <h2>Próximos Eventos</h2>
+      <div class="event-list" id="upcoming-events">
+        <div class="loading">Cargando eventos...</div>
+      </div>
+      <div class="section-action">
+        <a href="/events" class="btn btn-outline">Ver Todos los Eventos</a>
+      </div>
+    </div>
+  </section>
+  
+  <section class="testimonials-section">
+    <div class="container">
+      <h2>Testimonios Destacados</h2>
+      <div class="testimonial-grid" id="featured-testimonials">
+        <div class="loading">Cargando testimonios...</div>
+      </div>
+      <div class="section-action">
+        <a href="/testimonials" class="btn btn-outline">Ver Todos los Testimonios</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('includes/footer', { pageScripts }) %>

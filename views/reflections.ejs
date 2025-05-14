@@ -1,0 +1,141 @@
+<!-- views/reflections.ejs -->
+<%
+  const pageCss = ['reflections'];
+  const pageScripts = [];
+%>
+
+<%- include('includes/head', { pageCss }) %>
+<%- include('includes/nav') %>
+<%- include('includes/header', { description: 'Explora reflexiones sobre fe, comunidad y crecimiento espiritual.' }) %>
+
+<main class="reflections-page">
+  <div class="container">
+    <div class="page-layout">
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <h3>Categorías</h3>
+          <ul class="category-list">
+            <li>
+              <a href="/reflections" class="<%= selectedCategory === 'all' ? 'active' : '' %>">Todas las Categorías</a>
+            </li>
+            <% categories.forEach(category => { %>
+              <li>
+                <a href="/reflections?category=<%= category %>" class="<%= selectedCategory === category ? 'active' : '' %>">
+                  <%= category %>
+                </a>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+        
+        <% if (tags && tags.length > 0) { %>
+          <div class="sidebar-section">
+            <h3>Etiquetas Populares</h3>
+            <div class="tag-cloud">
+              <% tags.forEach(tag => { %>
+                <a href="/reflections?tag=<%= tag._id %>" class="tag <%= selectedTag === tag._id ? 'active' : '' %>">
+                  <%= tag._id %> <span class="tag-count"><%= tag.count %></span>
+                </a>
+              <% }) %>
+            </div>
+          </div>
+        <% } %>
+        
+        <div class="sidebar-section">
+          <a href="/reflections/submit" class="btn btn-primary btn-block">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Enviar Reflexión
+          </a>
+        </div>
+      </aside>
+      
+      <div class="main-content">
+        <% if (reflections.length > 0) { %>
+          <div class="reflections-grid">
+            <% reflections.forEach(reflection => { %>
+              <div class="reflection-card">
+                <% if (reflection.images && reflection.images.length > 0) { %>
+                  <div class="card-image">
+                    <img src="<%= reflection.images[0] %>" alt="<%= reflection.title %>">
+                  </div>
+                <% } %>
+                
+                <div class="card-content">
+                  <h2 class="card-title">
+                    <a href="/reflections/<%= reflection._id %>"><%= reflection.title %></a>
+                    <% if (reflection.isPinned) { %>
+                      <span class="pin-icon" title="Destacado">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                      </span>
+                    <% } %>
+                  </h2>
+                  
+                  <div class="card-meta">
+                    <span class="category"><%= reflection.category %></span>
+                    <span class="date"><%= new Date(reflection.createdAt).toLocaleDateString() %></span>
+                  </div>
+                  
+                  <p class="card-description"><%= reflection.description %></p>
+                  
+                  <div class="card-footer">
+                    <a href="/reflections/<%= reflection._id %>" class="read-more">Leer Más</a>
+                    
+                    <% if (reflection.tags && reflection.tags.length > 0) { %>
+                      <div class="card-tags">
+                        <% reflection.tags.slice(0, 3).forEach(tag => { %>
+                          <a href="/reflections?tag=<%= tag %>" class="tag"><%= tag %></a>
+                        <% }) %>
+                      </div>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+          
+          <!-- Pagination -->
+          <% if (pagination.totalPages > 1) { %>
+            <div class="pagination">
+              <% if (pagination.hasPrev) { %>
+                <a href="/reflections?page=<%= pagination.page - 1 %><%= selectedCategory !== 'all' ? '&category=' + selectedCategory : '' %><%= selectedTag ? '&tag=' + selectedTag : '' %>" class="pagination-btn prev">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                  Anterior
+                </a>
+              <% } else { %>
+                <span class="pagination-btn prev disabled">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                  Anterior
+                </span>
+              <% } %>
+              
+              <div class="pagination-info">
+                Página <%= pagination.page %> de <%= pagination.totalPages %>
+              </div>
+              
+              <% if (pagination.hasNext) { %>
+                <a href="/reflections?page=<%= pagination.page + 1 %><%= selectedCategory !== 'all' ? '&category=' + selectedCategory : '' %><%= selectedTag ? '&tag=' + selectedTag : '' %>" class="pagination-btn next">
+                  Siguiente
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+              <% } else { %>
+                <span class="pagination-btn next disabled">
+                  Siguiente
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </span>
+              <% } %>
+            </div>
+          <% } %>
+        <% } else { %>
+          <div class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <h2>No se encontraron reflexiones</h2>
+            <p>No hay reflexiones que coincidan con tus filtros actuales.</p>
+            <a href="/reflections" class="btn btn-primary">Ver Todas las Reflexiones</a>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('includes/footer', { pageScripts }) %>

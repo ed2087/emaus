@@ -1,0 +1,152 @@
+<!-- views/admin/comments.ejs -->
+<%
+  const pageCss = ['cms', 'cms-comments'];
+  const pageScripts = ['cms/cmsComments'];
+%>
+
+<%- include('../includes/head', { pageCss }) %>
+
+<div class="admin-layout">
+  <!-- Admin sidebar (omitted for brevity) -->
+  <%- include('../includes/admin-sidebar') %>
+  <!-- Admin content -->
+  <main class="admin-content">
+    <header class="admin-header">
+      <h1>Administrar Comentarios</h1>
+    </header>
+    
+    <div class="content-container">
+      <!-- Filters and search -->
+      <div class="filters">
+        <div class="filter-group">
+          <label for="status-filter">Estado:</label>
+          <select id="status-filter">
+            <option value="all" <%= filter === 'all' ? 'selected' : '' %>>Todos</option>
+            <option value="pending" <%= filter === 'pending' ? 'selected' : '' %>>Pendientes de Aprobación</option>
+            <option value="approved" <%= filter === 'approved' ? 'selected' : '' %>>Aprobados</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label for="content-filter">Tipo de Contenido:</label>
+          <select id="content-filter">
+            <option value="all">Todos los Tipos</option>
+            <option value="Reflection">Reflexiones</option>
+            <option value="Testimonial">Testimonios</option>
+            <option value="Event">Eventos</option>
+          </select>
+        </div>
+        
+        <div class="search-group">
+          <input type="text" id="search" placeholder="Buscar comentarios...">
+          <button type="button" class="btn btn-outline">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Comments list -->
+      <div class="comments-list">
+        <% if (comments.length > 0) { %>
+          <% comments.forEach(comment => { %>
+            <div class="comment-card" data-id="<%= comment._id %>">
+              <div class="comment-header">
+                <div class="comment-meta">
+                  <span class="author"><%= comment.author.firstName %> <%= comment.author.lastName %></span>
+                  <span class="date"><%= new Date(comment.createdAt).toLocaleString() %></span>
+                  <span class="content-type"><%= comment.contentType %></span>
+                  <% if (comment.parentCommentId) { %>
+                    <span class="reply-badge">Respuesta</span>
+                  <% } %>
+                </div>
+                
+                <div class="comment-status">
+                  <% if (comment.isApproved) { %>
+                    <span class="status-badge active">Aprobado</span>
+                  <% } else { %>
+                    <span class="status-badge draft">Pendiente</span>
+                  <% } %>
+                </div>
+              </div>
+              
+              <div class="comment-body">
+                <%= comment.body %>
+              </div>
+              
+              <div class="comment-actions">
+                <% if (!comment.isApproved) { %>
+                  <button type="button" class="btn btn-sm btn-primary approve-btn" data-id="<%= comment._id %>">Aprobar</button>
+                <% } %>
+                
+                <a href="/<%= comment.contentType.toLowerCase() %>s/<%= comment.contentId %>" class="btn btn-sm btn-outline" target="_blank">Ver Contenido</a>
+                
+                <% if (user.role === 'admin') { %>
+                  <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="<%= comment._id %>">Eliminar</button>
+                <% } %>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div class="empty-state">
+            <p>No se encontraron comentarios que coincidan con tus criterios.</p>
+          </div>
+        <% } %>
+      </div>
+      
+      <!-- Pagination -->
+      <% if (pagination.totalPages > 1) { %>
+        <div class="pagination">
+          <% if (pagination.hasPrev) { %>
+            <a href="/admin/comments?page=<%= pagination.page - 1 %>&status=<%= filter %>" class="pagination-btn prev">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              Anterior
+            </a>
+          <% } else { %>
+            <span class="pagination-btn prev disabled">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              Anterior
+            </span>
+          <% } %>
+          
+          <div class="pagination-info">
+            Página <%= pagination.page %> de <%= pagination.totalPages %>
+          </div>
+          
+          <% if (pagination.hasNext) { %>
+            <a href="/admin/comments?page=<%= pagination.page + 1 %>&status=<%= filter %>" class="pagination-btn next">
+              Siguiente
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+          <% } else { %>
+            <span class="pagination-btn next disabled">
+              Siguiente
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </span>
+          <% } %>
+        </div>
+      <% } %>
+    </div>
+  </main>
+</div>
+
+<!-- Delete confirmation modal -->
+<div class="modal" id="delete-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Confirmar Eliminación</h2>
+      <button type="button" class="close-modal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>¿Estás seguro de que quieres eliminar este comentario? Esta acción no se puede deshacer.</p>
+      <p>Cualquier respuesta a este comentario también será eliminada.</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline cancel-delete">Cancelar</button>
+      <button type="button" class="btn btn-danger confirm-delete">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<%- include('../includes/footer', { pageScripts }) %>

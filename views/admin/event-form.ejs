@@ -1,0 +1,206 @@
+<!-- views/admin/event-form.ejs -->
+<%
+  const pageCss = ['cms', 'cms-event-form'];
+  const pageScripts = ['cms/cmsEvents'];
+%>
+
+<%- include('../includes/head', { pageCss }) %>
+
+<div class="admin-layout">
+  <!-- Admin sidebar (omitted for brevity) -->
+  <%- include('../includes/admin-sidebar') %>
+  <!-- Admin content -->
+  <main class="admin-content">
+    <header class="admin-header">
+      <h1><%= event ? 'Editar Evento' : 'Añadir Nuevo Evento' %></h1>
+      <div class="header-actions">
+        <a href="/admin/events" class="btn btn-outline">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Volver a Eventos
+        </a>
+      </div>
+    </header>
+    
+    <div class="content-container">
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-error">
+          <%= error %>
+        </div>
+      <% } %>
+      
+      <form action="<%= event ? '/admin/events/' + event._id + '?_method=PUT' : '/admin/events' %>" method="POST" class="form-layout">
+        <div class="form-grid">
+          <div class="form-main">
+            <div class="form-section">
+              <div class="form-group">
+                <label for="title">Título</label>
+                <input 
+                  type="text" 
+                  id="title" 
+                  name="title" 
+                  value="<%= event ? event.title : '' %>" 
+                  required
+                  maxlength="150"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="description">Descripción</label>
+                <textarea 
+                  id="description" 
+                  name="description" 
+                  required
+                  maxlength="1000"
+                ><%= event ? event.description : '' %></textarea>
+                <div class="input-help">Descripción del evento (máximo 1000 caracteres)</div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="location">Ubicación</label>
+                  <input 
+                    type="text" 
+                    id="location" 
+                    name="location" 
+                    value="<%= event ? event.location : '' %>" 
+                    required
+                  >
+                </div>
+                
+                <div class="form-group">
+                  <label for="eventType">Tipo de Evento</label>
+                  <select id="eventType" name="eventType" required>
+                    <option value="Retiro" <%= event && event.eventType === 'Retiro' ? 'selected' : '' %>>Retiro</option>
+                    <option value="Encuentro" <%= event && event.eventType === 'Encuentro' ? 'selected' : '' %>>Encuentro</option>
+                    <option value="Taller" <%= event && event.eventType === 'Taller' ? 'selected' : '' %>>Taller</option>
+                    <option value="Misa" <%= event && event.eventType === 'Misa' ? 'selected' : '' %>>Misa</option>
+                    <option value="Otro" <%= event && event.eventType === 'Otro' ? 'selected' : '' %>>Otro</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="date">Fecha</label>
+                  <input 
+                    type="date" 
+                    id="date" 
+                    name="date" 
+                    value="<%= event && event.date ? new Date(event.date).toISOString().split('T')[0] : '' %>" 
+                    required
+                  >
+                </div>
+                
+                <div class="form-group">
+                  <label for="time">Hora (opcional)</label>
+                  <input 
+                    type="text" 
+                    id="time" 
+                    name="time" 
+                    value="<%= event ? event.time : '' %>" 
+                    placeholder="ej. 7:00 PM"
+                  >
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="image">URL de Imagen (opcional)</label>
+                <input 
+                  type="url" 
+                  id="image" 
+                  name="image" 
+                  value="<%= event ? event.image : '' %>" 
+                >
+                <div class="input-help">Introduce una URL a una imagen para este evento</div>
+              </div>
+              
+              <div id="image-preview" class="image-preview">
+                <% if (event && event.image) { %>
+                  <div class="preview-image">
+                    <img src="<%= event.image %>" alt="Vista previa">
+                  </div>
+                <% } else { %>
+                  <div class="no-preview">
+                    <p>Introduce una URL de imagen para ver una vista previa</p>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-sidebar">
+            <div class="form-section">
+              <div class="form-group">
+                <label for="registrationUrl">URL de Registro (opcional)</label>
+                <input 
+                  type="url" 
+                  id="registrationUrl" 
+                  name="registrationUrl" 
+                  value="<%= event ? event.registrationUrl : '' %>" 
+                >
+                <div class="input-help">URL de la página de registro externa</div>
+              </div>
+              
+              <div class="form-group">
+                <label for="registrationDeadline">Fecha Límite de Registro (opcional)</label>
+                <input 
+                  type="date" 
+                  id="registrationDeadline" 
+                  name="registrationDeadline" 
+                  value="<%= event && event.registrationDeadline ? new Date(event.registrationDeadline).toISOString().split('T')[0] : '' %>" 
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="capacity">Capacidad (opcional)</label>
+                <input 
+                  type="number" 
+                  id="capacity" 
+                  name="capacity" 
+                  value="<%= event ? event.capacity : '' %>" 
+                  min="1"
+                >
+                <div class="input-help">Número máximo de asistentes</div>
+              </div>
+              
+              <div class="form-group checkbox-group">
+                <label>
+                  <input 
+                    type="checkbox" 
+                    name="isFeatured" 
+                    <%= event && event.isFeatured ? 'checked' : '' %>
+                  >
+                  Destacado
+                </label>
+                <div class="input-help">Destacar en la página de inicio</div>
+              </div>
+              
+              <div class="form-group checkbox-group">
+                <label>
+                  <input 
+                    type="checkbox" 
+                    name="isActive" 
+                    <%= !event || event.isActive ? 'checked' : '' %>
+                  >
+                  Activo
+                </label>
+                <div class="input-help">Cuando no está marcado, el evento no será visible</div>
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">
+                <%= event ? 'Actualizar Evento' : 'Crear Evento' %>
+              </button>
+              <% if (event) { %>
+                <a href="/events/<%= event._id %>" class="btn btn-outline">Ver</a>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<%- include('../includes/footer', { pageScripts }) %>

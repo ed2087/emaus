@@ -1,0 +1,29 @@
+<!-- views/message.ejs -->
+<%
+  const pageCss = ['message'];
+  const pageScripts = [];
+%>
+
+<%- include('includes/head', { pageCss }) %>
+<%- include('includes/nav') %>
+
+<main class="message-page">
+  <div class="container">
+    <div class="message-box">
+      <h1><%= title %></h1>
+      <p><%= message %></p>
+      
+      <% if (actionText && actionUrl) { %>
+        <div class="message-action">
+          <a href="<%= actionUrl %>" class="btn btn-primary"><%= actionText %></a>
+        </div>
+      <% } %>
+      
+      <div class="message-home">
+        <a href="/">Volver al Inicio</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('includes/footer', { pageScripts }) %>

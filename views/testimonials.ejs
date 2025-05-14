@@ -1,0 +1,98 @@
+<!-- views/testimonials.ejs -->
+<%
+  const pageCss = ['testimonials'];
+  const pageScripts = [];
+%>
+
+<%- include('includes/head', { pageCss }) %>
+
+<%- include('includes/nav') %>
+<%- include('includes/header', { description: 'Lee testimonios inspiradores de miembros de nuestra comunidad.' }) %>
+
+<main class="testimonials-page">
+  <div class="container">
+    <div class="page-actions">
+      <a href="/testimonials/submit" class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Comparte Tu Testimonio
+      </a>
+    </div>
+    
+    <% if (testimonials.length > 0) { %>
+      <div class="testimonials-grid">
+        <% testimonials.forEach(testimonial => { %>
+          <div class="testimonial-card">
+            <div class="testimonial-content">
+              <h2 class="testimonial-title">
+                <a href="/testimonials/<%= testimonial._id %>"><%= testimonial.title %></a>
+              </h2>
+              
+              <div class="testimonial-author">
+                <% if (testimonial.image) { %>
+                  <div class="author-image">
+                    <img src="<%= testimonial.image %>" alt="<%= testimonial.authorName %>">
+                  </div>
+                <% } else { %>
+                  <div class="author-avatar">
+                    <%= testimonial.authorName.charAt(0) %>
+                  </div>
+                <% } %>
+                <div class="author-name"><%= testimonial.authorName %></div>
+              </div>
+              
+              <div class="testimonial-body">
+                <p class="testimonial-excerpt"><%= testimonial.description %></p>
+              </div>
+              
+              <div class="testimonial-footer">
+                <a href="/testimonials/<%= testimonial._id %>" class="read-more">Leer Testimonio Completo</a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+      
+      <!-- Pagination -->
+      <% if (pagination.totalPages > 1) { %>
+        <div class="pagination">
+          <% if (pagination.hasPrev) { %>
+            <a href="/testimonials?page=<%= pagination.page - 1 %>" class="pagination-btn prev">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              Anterior
+            </a>
+          <% } else { %>
+            <span class="pagination-btn prev disabled">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              Anterior
+            </span>
+          <% } %>
+          
+          <div class="pagination-info">
+            Página <%= pagination.page %> de <%= pagination.totalPages %>
+          </div>
+          
+          <% if (pagination.hasNext) { %>
+            <a href="/testimonials?page=<%= pagination.page + 1 %>" class="pagination-btn next">
+              Siguiente
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+          <% } else { %>
+            <span class="pagination-btn next disabled">
+              Siguiente
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </span>
+          <% } %>
+        </div>
+      <% } %>
+    <% } else { %>
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <h2>Aún no hay testimonios</h2>
+        <p>Sé el primero en compartir tu experiencia con nuestra comunidad.</p>
+        <a href="/testimonials/submit" class="btn btn-primary">Comparte Tu Testimonio</a>
+      </div>
+    <% } %>
+  </div>
+</main>
+
+<%- include('includes/footer', { pageScripts }) %>

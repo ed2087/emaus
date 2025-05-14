@@ -1,0 +1,169 @@
+<!-- views/content/event-single.ejs -->
+<%
+  const pageCss = ['markdown','events', 'comments'];
+  const pageScripts = ['markdownParser', 'comments'];
+%>
+
+<%- include('../includes/head', { pageCss }) %>
+
+<%- include('../includes/nav') %>
+
+<article class="event-single">
+  <header class="event-header">
+    <div class="container">
+      <div class="event-type-link">
+        <a href="/events?type=<%= event.eventType %>"><%= event.eventType %></a>
+      </div>
+      
+      <h1><%= event.title %></h1>
+    </div>
+  </header>
+  
+  <div class="container">
+    <div class="page-layout">
+      <main class="main-content">
+        <div class="event-details-card">
+          <div class="event-meta">
+            <div class="meta-item date">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              <div>
+                <strong>Fecha</strong>
+                <span><%= new Date(event.date).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+              </div>
+            </div>
+            
+            <% if (event.time) { %>
+              <div class="meta-item time">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <div>
+                  <strong>Hora</strong>
+                  <span><%= event.time %></span>
+                </div>
+              </div>
+            <% } %>
+            
+            <div class="meta-item location">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              <div>
+                <strong>Ubicación</strong>
+                <span><%= event.location %></span>
+              </div>
+            </div>
+            
+            <% if (event.capacity) { %>
+              <div class="meta-item capacity">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <div>
+                  <strong>Capacidad</strong>
+                  <span><%= event.capacity %> asistentes</span>
+                </div>
+              </div>
+            <% } %>
+          </div>
+          
+          <% if (event.registrationUrl) { %>
+            <div class="registration-section">
+              <% if (event.registrationDeadline) { %>
+                <% const now = new Date(); %>
+                <% const deadline = new Date(event.registrationDeadline); %>
+                <% if (deadline > now) { %>
+                  <div class="registration-info">
+                    <p>El registro cierra: <%= deadline.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+                  </div>
+                  <a href="<%= event.registrationUrl %>" class="btn btn-primary btn-lg" target="_blank" rel="noopener noreferrer">Registrarse Ahora</a>
+                <% } else { %>
+                  <div class="registration-closed">
+                    <p>El registro está cerrado para este evento.</p>
+                  </div>
+                <% } %>
+              <% } else { %>
+                <a href="<%= event.registrationUrl %>" class="btn btn-primary btn-lg" target="_blank" rel="noopener noreferrer">Registrarse Ahora</a>
+              <% } %>
+            </div>
+          <% } %>
+        </div>
+        
+        <% if (event.image) { %>
+          <div class="event-image">
+            <img src="<%= event.image %>" alt="<%= event.title %>">
+          </div>
+        <% } %>
+        
+        <div class="event-content">
+          <div class="description">
+            <%= event.description %>
+          </div>
+        </div>
+        
+        <!-- Comments section -->
+        <section class="comments-section">
+          <h2>Comentarios</h2>
+          
+          <% if (user) { %>
+            <div class="comment-form">
+              <form id="comment-form" data-content-type="Event" data-content-id="<%= event._id %>">
+                <div class="form-group">
+                  <textarea name="comment" id="comment" placeholder="Comparte tus pensamientos..."></textarea>
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary">Enviar Comentario</button>
+                </div>
+              </form>
+            </div>
+          <% } else { %>
+            <div class="login-prompt">
+              <p>Por favor <a href="/auth/login?redirectTo=<%= encodeURIComponent('/events/' + event._id) %>">inicia sesión</a> para dejar un comentario.</p>
+            </div>
+          <% } %>
+          
+          <div id="comments-container" class="comments-container">
+            <div class="loading">Cargando comentarios...</div>
+          </div>
+        </section>
+      </main>
+      
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <h3>Compartir Este Evento</h3>
+          <div class="share-buttons">
+            <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent(`${req.protocol}://${req.get('host')}${req.originalUrl}`) %>" target="_blank" rel="noopener noreferrer" class="share-btn facebook">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+              Facebook
+            </a>
+            <a href="https://twitter.com/intent/tweet?text=<%= encodeURIComponent(event.title) %>&url=<%= encodeURIComponent(`${req.protocol}://${req.get('host')}${req.originalUrl}`) %>" target="_blank" rel="noopener noreferrer" class="share-btn twitter">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+              Twitter
+            </a>
+            <a href="mailto:?subject=<%= encodeURIComponent(`Evento: ${event.title}`) %>&body=<%= encodeURIComponent(`Mira este evento: ${req.protocol}://${req.get('host')}${req.originalUrl}`) %>" class="share-btn email">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              Email
+            </a>
+          </div>
+        </div>
+        
+        <div class="sidebar-section">
+          <h3>Añadir al Calendario</h3>
+          <div class="calendar-buttons">
+            <a href="#" class="calendar-btn google" id="google-calendar">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              Google Calendar
+            </a>
+            <a href="#" class="calendar-btn ical" id="ical-calendar">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+              iCal
+            </a>
+          </div>
+        </div>
+        
+        <div class="sidebar-section">
+          <a href="/events" class="btn btn-outline btn-block">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Volver a Eventos
+          </a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</article>
+
+<%- include('../includes/footer', { pageScripts }) %>

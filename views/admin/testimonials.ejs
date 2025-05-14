@@ -1,0 +1,159 @@
+<!-- views/admin/testimonials.ejs -->
+<%
+  const pageCss = ['cms', 'cms-testimonials'];
+  const pageScripts = ['cms/cmsTestimonials'];
+%>
+
+<%- include('../includes/head', { pageCss }) %>
+
+<!-- views/admin/testimonials.ejs (continuing) -->
+<div class="admin-layout">
+  <!-- Admin sidebar (same as dashboard) -->
+  <%- include('../includes/admin-sidebar') %>
+  
+  <!-- Admin content -->
+  <main class="admin-content">
+    <header class="admin-header">
+      <h1>Administrar Testimonios</h1>
+      <div class="header-actions">
+        <a href="/admin/testimonials/new" class="btn btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Nuevo Testimonio
+        </a>
+      </div>
+    </header>
+    
+    <div class="content-container">
+      <!-- Filters and search -->
+      <div class="filters">
+        <div class="filter-group">
+          <label for="status-filter">Estado:</label>
+          <select id="status-filter">
+            <option value="all">Todos</option>
+            <option value="published">Publicados</option>
+            <option value="draft">Borradores</option>
+            <option value="pending" <%= query && query.filter === 'pending' ? 'selected' : '' %>>Pendientes de Aprobación</option>
+          </select>
+        </div>
+        
+        <div class="search-group">
+          <input type="text" id="search" placeholder="Buscar testimonios...">
+          <button type="button" class="btn btn-outline">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Testimonials list -->
+      <div class="content-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Autor</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+              <th>Destacado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (testimonials.length > 0) { %>
+              <% testimonials.forEach(testimonial => { %>
+                <tr data-id="<%= testimonial._id %>">
+                  <td class="title-cell">
+                    <div class="cell-content">
+                      <span class="title"><%= testimonial.title %></span>
+                    </div>
+                  </td>
+                  <td><%= testimonial.authorName %></td>
+                  <td><%= new Date(testimonial.createdAt).toLocaleDateString() %></td>
+                  <td>
+                    <span class="status-badge <%= testimonial.isPublished ? 'published' : 'draft' %>">
+                      <%= testimonial.isPublished ? 'Publicado' : 'Borrador' %>
+                    </span>
+                  </td>
+                  <td>
+                    <% if (testimonial.isFeatured) { %>
+                      <span class="badge">Destacado</span>
+                    <% } else { %>
+                      -
+                    <% } %>
+                  </td>
+                  <td class="actions-cell">
+                    <div class="actions">
+                      <a href="/admin/testimonials/edit/<%= testimonial._id %>" class="btn btn-sm btn-outline">Editar</a>
+                      <a href="/testimonials/<%= testimonial._id %>" class="btn btn-sm btn-link">Ver</a>
+                      <% if (user.role === 'admin') { %>
+                        <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="<%= testimonial._id %>">Eliminar</button>
+                      <% } %>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="6" class="empty-table">No se encontraron testimonios.</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Pagination -->
+      <% if (pagination.totalPages > 1) { %>
+        <div class="pagination">
+          <% if (pagination.hasPrev) { %>
+            <a href="/admin/testimonials?page=<%= pagination.page - 1 %>" class="pagination-btn prev">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              Anterior
+            </a>
+          <% } else { %>
+            <span class="pagination-btn prev disabled">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              Anterior
+            </span>
+          <% } %>
+          
+          <div class="pagination-info">
+            Página <%= pagination.page %> de <%= pagination.totalPages %>
+          </div>
+          
+          <% if (pagination.hasNext) { %>
+            <a href="/admin/testimonials?page=<%= pagination.page + 1 %>" class="pagination-btn next">
+              Siguiente
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+          <% } else { %>
+            <span class="pagination-btn next disabled">
+              Siguiente
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </span>
+          <% } %>
+        </div>
+      <% } %>
+    </div>
+  </main>
+</div>
+
+<!-- Delete confirmation modal -->
+<div class="modal" id="delete-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Confirmar Eliminación</h2>
+      <button type="button" class="close-modal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>¿Estás seguro de que quieres eliminar este testimonio? Esta acción no se puede deshacer.</p>
+      <p>Todos los comentarios asociados con este testimonio también serán eliminados.</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline cancel-delete">Cancelar</button>
+      <button type="button" class="btn btn-danger confirm-delete">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<%- include('../includes/footer', { pageScripts }) %>

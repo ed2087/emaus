@@ -1,0 +1,22 @@
+<!-- views/includes/head.ejs -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | Comunidad Emaús</title>
+  
+  <!-- Base styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/nav.css">
+  <link rel="stylesheet" href="/css/header.css">
+  <link rel="stylesheet" href="/css/footer.css">
+  
+  <!-- Page-specific styles -->
+  <% if (typeof pageCss !== 'undefined' && pageCss) { %>
+    <% pageCss.forEach(css => { %>
+      <link rel="stylesheet" href="/css/<%= css %>.css">
+    <% }) %>
+  <% } %>
+</head>
+<body>

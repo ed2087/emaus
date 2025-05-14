@@ -1,0 +1,148 @@
+<!-- views/admin/testimonial-form.ejs -->
+<%
+  const pageCss = ['cms', 'cms-testimonial-form'];
+  const pageScripts = ['cms/cmsTestimonials'];
+%>
+
+<%- include('../includes/head', { pageCss }) %>
+
+<div class="admin-layout">
+  <!-- Admin sidebar (omitted for brevity) -->
+  <%- include('../includes/admin-sidebar') %>
+  <!-- Admin content -->
+  <main class="admin-content">
+    <header class="admin-header">
+      <h1><%= testimonial ? 'Editar Testimonio' : 'Añadir Nuevo Testimonio' %></h1>
+      <div class="header-actions">
+        <a href="/admin/testimonials" class="btn btn-outline">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Volver a Testimonios
+        </a>
+      </div>
+    </header>
+    
+    <div class="content-container">
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-error">
+          <%= error %>
+        </div>
+      <% } %>
+      
+      <form action="<%= testimonial ? '/admin/testimonials/' + testimonial._id + '?_method=PUT' : '/admin/testimonials' %>" method="POST" class="form-layout">
+        <div class="form-grid">
+          <div class="form-main">
+            <div class="form-section">
+              <div class="form-group">
+                <label for="title">Título</label>
+                <input 
+                  type="text" 
+                  id="title" 
+                  name="title" 
+                  value="<%= testimonial ? testimonial.title : '' %>" 
+                  required
+                  maxlength="200"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="description">Descripción Breve</label>
+                <textarea 
+                  id="description" 
+                  name="description" 
+                  required
+                  maxlength="500"
+                ><%= testimonial ? testimonial.description : '' %></textarea>
+                <div class="input-help">Un resumen corto (máximo 500 caracteres)</div>
+              </div>
+              
+              <div class="form-group">
+                <label for="body">Contenido del Testimonio</label>
+                <textarea 
+                  id="body" 
+                  name="body" 
+                  class="editor-textarea" 
+                  required
+                  minlength="50"
+                ><%= testimonial ? testimonial.body : '' %></textarea>
+                <div class="input-help">El testimonio completo (mínimo 50 caracteres)</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-sidebar">
+            <div class="form-section">
+              <div class="form-group">
+                <label for="authorName">Nombre del Autor</label>
+                <input 
+                  type="text" 
+                  id="authorName" 
+                  name="authorName" 
+                  value="<%= testimonial ? testimonial.authorName : '' %>" 
+                  required
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="image">URL de Imagen del Autor</label>
+                <input 
+                  type="url" 
+                  id="image" 
+                  name="image" 
+                  value="<%= testimonial ? testimonial.image : '' %>" 
+                >
+                <div class="input-help">URL de imagen de perfil opcional</div>
+              </div>
+              
+              <div id="image-preview" class="image-preview">
+                <% if (testimonial && testimonial.image) { %>
+                  <div class="preview-image">
+                    <img src="<%= testimonial.image %>" alt="Vista previa">
+                  </div>
+                <% } else { %>
+                  <div class="no-preview">
+                    <p>Introduce una URL de imagen para ver una vista previa</p>
+                  </div>
+                <% } %>
+              </div>
+              
+              <div class="form-group checkbox-group">
+                <label>
+                  <input 
+                    type="checkbox" 
+                    name="isPublished" 
+                    <%= testimonial && testimonial.isPublished ? 'checked' : '' %>
+                  >
+                  Publicar
+                </label>
+                <div class="input-help">Cuando no está marcado, se guarda como borrador</div>
+              </div>
+              
+              <div class="form-group checkbox-group">
+                <label>
+                  <input 
+                    type="checkbox" 
+                    name="isFeatured" 
+                    <%= testimonial && testimonial.isFeatured ? 'checked' : '' %>
+                  >
+                  Destacado
+                </label>
+                <div class="input-help">Mostrar en la rotación de la página principal</div>
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">
+                <%= testimonial ? 'Actualizar Testimonio' : 'Publicar Testimonio' %>
+              </button>
+              <% if (testimonial) { %>
+                <a href="/testimonials/<%= testimonial._id %>" class="btn btn-outline">Ver</a>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<%- include('../includes/footer', { pageScripts }) %>

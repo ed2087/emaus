@@ -1,0 +1,140 @@
+<!-- views/admin/announcement-form.ejs -->
+<%
+  const pageCss = ['cms', 'cms-announcement-form'];
+  const pageScripts = ['cms/cmsAnnouncements'];
+%>
+
+<%- include('../includes/head', { pageCss }) %>
+
+<div class="admin-layout">
+  <!-- Admin sidebar (omitted for brevity) -->
+  <%- include('../includes/admin-sidebar') %>
+  
+  <!-- Admin content -->
+  <main class="admin-content">
+    <header class="admin-header">
+      <h1><%= announcement ? 'Editar Anuncio' : 'Añadir Nuevo Anuncio' %></h1>
+      <div class="header-actions">
+        <a href="/admin/announcements" class="btn btn-outline">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Volver a Anuncios
+        </a>
+      </div>
+    </header>
+    
+    <div class="content-container">
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-error">
+          <%= error %>
+        </div>
+      <% } %>
+      
+      <form action="<%= announcement ? '/admin/announcements/' + announcement._id + '?_method=PUT' : '/admin/announcements' %>" method="POST" class="form-layout">
+        <div class="form-grid">
+          <div class="form-main">
+            <div class="form-section">
+              <div class="form-group">
+                <label for="title">Título</label>
+                <input 
+                  type="text" 
+                  id="title" 
+                  name="title" 
+                  value="<%= announcement ? announcement.title : '' %>" 
+                  required
+                  maxlength="120"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="description">Descripción</label>
+                <textarea 
+                  id="description" 
+                  name="description" 
+                  required
+                  maxlength="500"
+                ><%= announcement ? announcement.description : '' %></textarea>
+                <div class="input-help">Resumen breve (máximo 500 caracteres)</div>
+              </div>
+              
+              <div class="form-group">
+                <label for="body">Contenido</label>
+                <textarea 
+                  id="body" 
+                  name="body" 
+                  class="editor-textarea" 
+                  required
+                  maxlength="3000"
+                ><%= announcement ? announcement.body : '' %></textarea>
+                <div class="input-help">Contenido completo del anuncio (máximo 3000 caracteres)</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-sidebar">
+            <div class="form-section">
+              <div class="form-group">
+                <label for="author">Autor</label>
+                <input 
+                  type="text" 
+                  id="author" 
+                  name="author" 
+                  value="<%= announcement ? announcement.author : 'Admin' %>"
+                >
+                <div class="input-help">Por defecto es "Admin" si se deja en blanco</div>
+              </div>
+              
+              <div class="form-group">
+                <label for="expiresAt">Fecha de Expiración</label>
+                <div class="input-with-button">
+                  <input 
+                    type="date" 
+                    id="expiresAt" 
+                    name="expiresAt" 
+                    value="<%= announcement && announcement.expiresAt ? new Date(announcement.expiresAt).toISOString().split('T')[0] : '' %>"
+                  >
+                  <button type="button" id="clear-expiry" class="btn btn-sm">Limpiar</button>
+                </div>
+                <div class="input-help">Opcional. Dejar en blanco si no expira.</div>
+              </div>
+              
+              <div class="form-group checkbox-group">
+                <label>
+                  <input 
+                    type="checkbox" 
+                    name="isPinned" 
+                    <%= announcement && announcement.isPinned ? 'checked' : '' %>
+                  >
+                  Fijar Arriba
+                </label>
+                <div class="input-help">Los anuncios fijados se muestran primero</div>
+              </div>
+              
+              <div class="form-group checkbox-group">
+                <label>
+                  <input 
+                    type="checkbox" 
+                    name="isActive" 
+                    <%= !announcement || announcement.isActive ? 'checked' : '' %>
+                  >
+                  Activo
+                </label>
+                <div class="input-help">Cuando no está marcado, el anuncio no será visible</div>
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">
+                <%= announcement ? 'Actualizar Anuncio' : 'Publicar Anuncio' %>
+              </button>
+              <% if (announcement) { %>
+                <a href="/announcements/<%= announcement._id %>" class="btn btn-outline">Ver</a>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<%- include('../includes/footer', { pageScripts }) %>

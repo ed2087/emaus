@@ -1,0 +1,57 @@
+<!-- views/error.ejs -->
+<%
+  const pageCss = ['error'];
+  const pageScripts = [];
+%>
+
+<%- include('includes/head', { pageCss }) %>
+
+<main class="error-page">
+  <div class="container">
+    <div class="error-box">
+      <h1><%= title %></h1>
+      <p><%= message %></p>
+      
+      <div class="error-action">
+        <a href="/" class="btn btn-primary">Volver al Inicio</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<style>
+  .error-page {
+    padding: var(--spacing-xl) 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .error-box {
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: var(--spacing-lg);
+    text-align: center;
+  }
+  
+  .error-box h1 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-md);
+    color: var(--primary-color);
+  }
+  
+  .error-box p {
+    margin-bottom: var(--spacing-lg);
+    color: var(--text-light);
+  }
+  
+  .error-action {
+    margin-top: var(--spacing-lg);
+  }
+</style>
+
+<%- include('includes/footer', { pageScripts }) %>

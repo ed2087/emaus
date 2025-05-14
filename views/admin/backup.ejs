@@ -1,0 +1,65 @@
+<!-- views/admin/backup.ejs -->
+<%
+  const pageCss = ['cms', 'cms-backup'];
+  const pageScripts = ['cms/cmsBackup'];
+%>
+
+<%- include('../includes/head', { pageCss }) %>
+
+<div class="admin-layout">
+  <!-- Admin sidebar (omitted for brevity) -->
+  <%- include('../includes/admin-sidebar') %>
+  <!-- Admin content -->
+  <main class="admin-content">
+    <header class="admin-header">
+      <h1>Copia de Seguridad y Restauración</h1>
+    </header>
+    
+    <div class="content-container">
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-error">
+          <%= error %>
+        </div>
+      <% } %>
+      
+      <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert-success">
+          <%= success %>
+        </div>
+      <% } %>
+      
+      <div class="backup-section">
+        <h2>Crear Copia de Seguridad</h2>
+        <p>Crea una copia de seguridad de todos los datos del sitio. Esto descargará un archivo JSON que contiene todo el contenido, usuarios y comentarios.</p>
+        
+        <form action="/admin/backup" method="POST" class="backup-form">
+          <button type="submit" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            Descargar Copia de Seguridad
+          </button>
+        </form>
+      </div>
+      
+      <div class="backup-section restore-section">
+        <h2>Restaurar desde Copia de Seguridad</h2>
+        <p class="warning">Advertencia: Restaurar desde una copia de seguridad sobrescribirá todos los datos existentes. Esta acción no se puede deshacer.</p>
+        
+        <div class="form-section">
+          <p>Para restaurar desde una copia de seguridad, contacta al administrador del sistema. Esta operación requiere acceso directo a la base de datos.</p>
+        </div>
+      </div>
+      
+      <div class="backup-section">
+        <h2>Historial de Copias de Seguridad</h2>
+        <p>Registro de copias de seguridad anteriores. Haz clic para descargar.</p>
+        
+        <div class="backup-history">
+          <!-- In a real application, this would list previous backups -->
+          <p class="empty-state">No hay historial de copias de seguridad disponible</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<%- include('../includes/footer', { pageScripts }) %>

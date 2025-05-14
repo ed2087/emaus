@@ -1,0 +1,50 @@
+<!-- views/content/announcement-single.ejs -->
+<%
+  const pageCss = [ 'markdown','announcements'];
+  const pageScripts = ['markdownParser'];
+%>
+
+<%- include('../includes/head', { pageCss }) %>
+<%- include('../includes/nav') %>
+
+<article class="announcement-single">
+  <header class="announcement-header">
+    <div class="container">
+      <h1><%= announcement.title %></h1>
+      
+      <div class="meta">
+        <span class="author">Por <%= announcement.author %></span>
+        <span class="date"><%= new Date(announcement.createdAt).toLocaleDateString() %></span>
+        <% if (announcement.expiresAt) { %>
+          <span class="expiry">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Expira: <%= new Date(announcement.expiresAt).toLocaleDateString() %>
+          </span>
+        <% } %>
+      </div>
+    </div>
+  </header>
+  
+  <div class="container">
+    <div class="announcement-content">
+      <% if (announcement.description) { %>
+        <div class="description">
+          <%= announcement.description %>
+        </div>
+      <% } %>
+      
+      <div class="body">
+        <%= announcement.body %>
+      </div>
+    </div>
+    
+    <div class="announcement-actions">
+      <a href="/announcements" class="btn btn-outline">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Volver a Anuncios
+      </a>
+    </div>
+  </div>
+</article>
+
+<%- include('../includes/footer', { pageScripts }) %>

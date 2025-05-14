@@ -1,0 +1,90 @@
+<!-- views/announcements.ejs -->
+<%
+  const pageCss = ['announcements'];
+  const pageScripts = [];
+%>
+
+<%- include('includes/head', { pageCss }) %>
+<%- include('includes/nav') %>
+<%- include('includes/header', { description: 'Mantente actualizado con las últimas noticias y anuncios de nuestra comunidad.' }) %>
+
+<main class="announcements-page">
+  <div class="container">
+    <% if (announcements.length > 0) { %>
+      <div class="announcements-list">
+        <% announcements.forEach(announcement => { %>
+          <div class="announcement-card">
+            <div class="announcement-content">
+              <h2 class="announcement-title">
+                <a href="/announcements/<%= announcement._id %>"><%= announcement.title %></a>
+                <% if (announcement.isPinned) { %>
+                  <span class="pin-icon" title="Fijado">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>
+                  </span>
+                <% } %>
+              </h2>
+              
+              <div class="announcement-meta">
+                <span class="author">Por <%= announcement.author %></span>
+                <span class="date"><%= new Date(announcement.createdAt).toLocaleDateString() %></span>
+                <% if (announcement.expiresAt) { %>
+                  <span class="expiry">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    Expira: <%= new Date(announcement.expiresAt).toLocaleDateString() %>
+                  </span>
+                <% } %>
+              </div>
+              
+              <p class="announcement-description"><%= announcement.description %></p>
+              
+              <div class="announcement-footer">
+                <a href="/announcements/<%= announcement._id %>" class="read-more">Leer Anuncio Completo</a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+      
+      <!-- Pagination -->
+      <% if (pagination.totalPages > 1) { %>
+        <div class="pagination">
+          <% if (pagination.hasPrev) { %>
+            <a href="/announcements?page=<%= pagination.page - 1 %>" class="pagination-btn prev">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              Anterior
+            </a>
+          <% } else { %>
+            <span class="pagination-btn prev disabled">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              Anterior
+            </span>
+          <% } %>
+          
+          <div class="pagination-info">
+            Página <%= pagination.page %> de <%= pagination.totalPages %>
+          </div>
+          
+          <% if (pagination.hasNext) { %>
+            <a href="/announcements?page=<%= pagination.page + 1 %>" class="pagination-btn next">
+              Siguiente
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+          <% } else { %>
+            <span class="pagination-btn next disabled">
+              Siguiente
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </span>
+          <% } %>
+        </div>
+      <% } %>
+    <% } else { %>
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <h2>No se encontraron anuncios</h2>
+        <p>No hay anuncios activos en este momento.</p>
+      </div>
+    <% } %>
+  </div>
+</main>
+
+<%- include('includes/footer', { pageScripts }) %>

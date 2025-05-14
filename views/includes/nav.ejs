@@ -1,0 +1,44 @@
+<!-- views/includes/nav.ejs -->
+<nav class="main-nav">
+  <div class="container">
+    <div class="nav-logo">
+      <a href="/">Comunidad Emaús</a>
+    </div>
+    
+    <button class="nav-toggle" aria-label="Alternar menú de navegación">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    
+    <div class="nav-menu">
+      <ul class="nav-links">
+        <li><a href="/" class="<%= typeof path !== 'undefined' && path === '/' ? 'active' : '' %>">Inicio</a></li>
+        <li><a href="/reflections" class="<%= typeof path !== 'undefined' && path && path.startsWith('/reflections') ? 'active' : '' %>">Reflexiones</a></li>
+        <li><a href="/testimonials" class="<%= typeof path !== 'undefined' && path && path.startsWith('/testimonials') ? 'active' : '' %>">Testimonios</a></li>
+        <li><a href="/events" class="<%= typeof path !== 'undefined' && path && path.startsWith('/events') ? 'active' : '' %>">Eventos</a></li>
+        <li><a href="/announcements" class="<%= typeof path !== 'undefined' && path && path.startsWith('/announcements') ? 'active' : '' %>">Anuncios</a></li>
+      </ul>
+      
+      <div class="nav-auth">
+        <% if (typeof user !== 'undefined' && user) { %>
+          <div class="user-menu">
+            <button class="user-menu-toggle">
+              <span><%= user.firstName %></span>
+            </button>
+            <div class="user-dropdown">
+              <% if (user.role === 'admin' || user.role === 'moderator') { %>
+                <a href="/admin">Panel de Control</a>
+              <% } %>
+              <a href="/users/profile">Tu Perfil</a>
+              <a href="/auth/logout">Cerrar Sesión</a>
+            </div>
+          </div>
+        <% } else { %>
+          <a href="/auth/login" class="btn btn-login">Iniciar Sesión</a>
+          <a href="/auth/register" class="btn btn-register">Registrarse</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</nav>
