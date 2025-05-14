@@ -1,0 +1,79 @@
+/* public/css/cms-users.css */
+/* This file contains styles specific to the users section of the CMS */
+
+/* User role badges */
+.role-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+}
+
+.role-badge.admin {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.role-badge.moderator {
+  background-color: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+}
+
+.role-badge.user {
+  background-color: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+}
+
+/* User status badges */
+.status-badge.active {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.status-badge.inactive {
+  background-color: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+}
+
+.status-badge.unverified {
+  background-color: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+}
+
+/* User form fields */
+.user-details-section {
+  margin-bottom: 1.5rem;
+}
+
+.user-details-section h3 {
+  font-size: var(--font-size-md);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* User information fields in table */
+.user-name {
+  font-weight: var(--font-weight-medium);
+}
+
+.user-email {
+  font-size: var(--font-size-sm);
+  color: var(--text-light);
+}
+
+.joined-date {
+  font-size: var(--font-size-sm);
+  color: var(--text-light);
+}
+
+/* Delete confirm dialog specific styles */
+#delete-modal .modal-body p:first-child {
+  margin-bottom: 0.5rem;
+}
+
+#delete-modal .modal-body p:last-child {
+  color: var(--danger-color);
+  font-weight: var(--font-weight-medium);
+}

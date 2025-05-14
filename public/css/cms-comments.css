@@ -1,0 +1,100 @@
+/* public/css/cms-comments.css */
+/* This file contains styles specific to the comments section of the CMS */
+
+/* Comments list */
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.comment-card {
+  background-color: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--spacing-md);
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.comment-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: var(--font-size-sm);
+}
+
+.comment-meta .author {
+  font-weight: var(--font-weight-medium);
+}
+
+.comment-meta .date {
+  color: var(--text-light);
+}
+
+.comment-meta .content-type {
+  padding: 0.15rem 0.5rem;
+  background-color: var(--bg-light);
+  border-radius: 1rem;
+  font-size: 0.7rem;
+}
+
+.reply-badge {
+  padding: 0.15rem 0.5rem;
+  background-color: rgba(23, 162, 184, 0.1);
+  color: #17a2b8;
+  border-radius: 1rem;
+  font-size: 0.7rem;
+}
+
+.comment-status .status-badge {
+  margin-left: auto;
+}
+
+.comment-body {
+  margin-bottom: 1rem;
+  border-left: 3px solid var(--border-color);
+  padding-left: 0.75rem;
+  color: var(--text-color);
+  line-height: 1.5;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* Status badges */
+.status-badge.active {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.status-badge.draft {
+  background-color: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+/* Delete confirm dialog specific styles */
+#delete-modal .modal-body p:first-child {
+  margin-bottom: 0.5rem;
+}
+
+#delete-modal .modal-body p:last-child {
+  color: var(--danger-color);
+  font-weight: var(--font-weight-medium);
+}

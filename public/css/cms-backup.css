@@ -1,0 +1,77 @@
+/* public/css/cms-backup.css */
+/* This file contains styles specific to the backup section of the CMS */
+
+.backup-section {
+  background-color: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.backup-section h2 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-lg);
+}
+
+.backup-section p {
+  margin-bottom: var(--spacing-md);
+  color: var(--text-color);
+}
+
+.backup-form {
+  margin-top: var(--spacing-md);
+}
+
+.backup-form button {
+  display: flex;
+  align-items: center;
+}
+
+.backup-form button svg {
+  margin-right: 0.5rem;
+}
+
+.restore-section {
+  background-color: #fff3cd;
+  border-left: 3px solid #ffc107;
+}
+
+.restore-section h2 {
+  color: #856404;
+}
+
+.restore-section .warning {
+  color: #856404;
+  font-weight: var(--font-weight-medium);
+}
+
+.backup-history {
+  margin-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--spacing-md);
+}
+
+.backup-history .empty-state {
+  text-align: center;
+  padding: var(--spacing-md);
+  color: var(--text-light);
+  font-style: italic;
+}
+
+/* Spinner for loading indicator */
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

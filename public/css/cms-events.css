@@ -1,0 +1,96 @@
+/* public/css/cms-events.css */
+/* This file contains styles specific to the events section of the CMS */
+
+/* Event-specific status badges */
+.status-badge.active {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.status-badge.inactive {
+  background-color: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+}
+
+.status-badge.past {
+  background-color: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+}
+
+/* Featured badge styling */
+.badge.featured {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+}
+
+/* Date cell styling */
+.date-cell {
+  white-space: nowrap;
+}
+
+.time-info {
+  font-size: var(--font-size-sm);
+  color: var(--text-light);
+}
+
+/* Location cell styling */
+.location-cell {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Type cell styling */
+.type-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  background-color: var(--bg-dark);
+  color: var(--text-color);
+}
+
+/* Image preview in form */
+.image-preview {
+  margin-top: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.preview-image {
+  width: 100%;
+  height: 200px;
+}
+
+.preview-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-preview {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-light);
+  background-color: var(--bg-light);
+}
+
+/* Form field with note */
+.input-note {
+  font-size: var(--font-size-sm);
+  color: var(--text-light);
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
+/* Delete confirm dialog specific styles */
+#delete-modal .modal-body p:first-child {
+  margin-bottom: 0.5rem;
+}
+
+#delete-modal .modal-body p:last-child {
+  color: var(--danger-color);
+  font-weight: var(--font-weight-medium);
+}

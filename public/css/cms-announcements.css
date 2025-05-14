@@ -1,0 +1,56 @@
+/* public/css/cms-announcements.css */
+/* This file contains styles specific to the announcements section of the CMS */
+
+/* Announcement-specific status badges */
+.status-badge.active {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.status-badge.inactive {
+  background-color: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+}
+
+.status-badge.expired {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+/* Pinned badge styling */
+.badge.pinned {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+}
+
+/* Expiry date styling */
+.expiry-date {
+  color: var(--text-light);
+  font-size: var(--font-size-sm);
+  display: flex;
+  align-items: center;
+}
+
+.expiry-date svg {
+  margin-right: 0.25rem;
+}
+
+.expiry-date.expired {
+  color: var(--danger-color);
+}
+
+/* Form styles */
+.input-with-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.input-with-button input {
+  flex: 1;
+}
+
+/* Delete confirm dialog specific styles */
+#delete-modal .modal-body p {
+  margin-bottom: 0;
+}

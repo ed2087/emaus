@@ -1,0 +1,102 @@
+/* public/css/cms-reflections.css */
+/* This file contains styles specific to the reflections section of the CMS */
+
+/* Reflection-specific status badges */
+.status-badge.published {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.status-badge.draft {
+  background-color: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+}
+
+/* Category label styling */
+.category-label {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  background-color: var(--primary-light);
+  color: white;
+}
+
+/* Tags display in table */
+.tags-cell {
+  max-width: 200px;
+}
+
+.tags-cell .tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.tags-cell .tag {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.35rem;
+}
+
+/* Form specific styles */
+.editor-textarea {
+  font-family: monospace;
+  line-height: 1.5;
+}
+
+.markdown-help {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-light);
+  margin-top: 0.5rem;
+  font-family: monospace;
+}
+
+.markdown-help code {
+  background-color: var(--bg-light);
+  padding: 0.15rem 0.35rem;
+  border-radius: 3px;
+}
+
+/* Image preview */
+.image-preview {
+  margin-top: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.preview-image {
+  width: 100%;
+  height: 200px;
+}
+
+.preview-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-preview {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-light);
+  background-color: var(--bg-light);
+}
+
+/* Filter dropdown specific styles */
+.category-filter {
+  min-width: 150px;
+}
+
+/* Delete confirm dialog specific styles */
+#delete-modal .modal-body p:first-child {
+  margin-bottom: 0.5rem;
+}
+
+#delete-modal .modal-body p:last-child {
+  color: var(--danger-color);
+  font-weight: var(--font-weight-medium);
+}

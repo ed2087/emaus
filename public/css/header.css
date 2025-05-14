@@ -1,0 +1,20 @@
+/* public/css/header.css */
+.main-header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: var(--spacing-xl) 0;
+  margin-bottom: var(--spacing-xl);
+  text-align: center;
+}
+
+.main-header h1 {
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-xxl);
+}
+
+.header-description {
+  max-width: 800px;
+  margin: 0 auto;
+  font-size: var(--font-size-lg);
+  opacity: 0.9;
+}
