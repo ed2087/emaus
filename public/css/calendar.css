@@ -141,6 +141,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 1rem;
 }
 
 .day-event .event-time {
@@ -352,5 +353,74 @@
   
   .event-modal-meta {
     grid-template-columns: 1fr;
+  }
+}
+
+
+@media (max-width: 768px) {
+  /* Make the calendar container scrollable horizontally */
+  .calendar-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
+    padding-bottom: 15px; /* Space for the scrollbar */
+  }
+  
+  /* Keep the 7-column grid but set minimum column width */
+  .calendar-grid {
+    min-width: 700px; /* Ensure columns don't get too compressed */
+    width: auto;
+  }
+  
+  /* Ensure days maintain reasonable dimensions */
+  .day {
+    min-height: 100px;
+    min-width: 100px; /* Prevent days from getting too narrow */
+  }
+  
+  /* Make the day number more visible */
+  .day-number {
+    font-size: 0.8rem;
+    background-color: rgba(var(--primary-rgb), 0.1);
+    width: 25px;
+    height: 25px;
+  }
+  
+  /* Improve touch targets for events */
+  .day-event {
+    padding: 0.35rem 0.5rem;
+    margin-bottom: 0.35rem;
+  }
+  
+  /* Make navigation buttons more touch-friendly */
+  .month-navigation button,
+  .view-controls button {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Style scroll indicators to hint at horizontal scrolling */
+@media (max-width: 768px) {
+  /* Add visual indicator that content scrolls */
+  .calendar-container::after {
+    content: '→';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    font-size: 24px;
+    color: var(--primary-color);
+    opacity: 0.6;
+    animation: pulse 1.5s infinite;
+    pointer-events: none; /* Don't interfere with scrolling */
+  }
+  
+  @keyframes pulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0.4; }
+  }
+  
+  /* Hide the scroll indicator after user has scrolled */
+  .calendar-container.scrolled::after {
+    display: none;
   }
 }

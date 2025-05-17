@@ -12,6 +12,7 @@
   justify-content: space-between;
   align-items: center;
   height: var(--navbar-height);
+  padding: 0 20px;
 }
 
 .nav-logo a {
