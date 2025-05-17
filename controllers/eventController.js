@@ -39,7 +39,8 @@ const getEvents = async (req, res) => {
         hasPrev: page > 1
       },
       user: req.user || null,
-        path: req.path
+        path: req.path,
+         req: req 
     });
   } catch (error) {
     console.error('Error getting events:', error);
@@ -47,7 +48,8 @@ const getEvents = async (req, res) => {
       title: 'Server Error',
       message: 'An error occurred while loading events.',
       user: req.user || null,
-        path: req.path
+        path: req.path,
+         req: req 
     });
   }
 };
@@ -63,7 +65,7 @@ const getEvent = async (req, res) => {
         message: 'Event not found.',
         user: req.user || null,
         path: req.path,
-      req: req // Pass the request object for sharing URLs
+         req: req // Pass the request object for sharing URLs
       });
     }
     

@@ -1,0 +1,37 @@
+<%
+  const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+  const shareTitle =
+    (typeof reflection !== 'undefined' && reflection?.title) ? reflection.title :
+    (typeof testimonial !== 'undefined' && testimonial?.title) ? testimonial.title :
+    (typeof event !== 'undefined' && event?.title) ? event.title :
+    'Comunidad Emaús';
+
+  const shareLabel =
+    (typeof reflection !== 'undefined') ? 'esta reflexión' :
+    (typeof testimonial !== 'undefined') ? 'este testimonio' :
+    (typeof event !== 'undefined') ? 'este evento' :
+    'esta página';
+%>
+
+<div class="sidebar-section">
+  <h3>Compartir</h3>
+  <div class="share-buttons">
+    <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent(fullUrl) %>"
+       target="_blank" rel="noopener noreferrer" class="share-btn facebook">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" ...></svg>
+      Facebook
+    </a>
+
+    <a href="https://twitter.com/intent/tweet?text=<%= encodeURIComponent(shareTitle) %>&url=<%= encodeURIComponent(fullUrl) %>"
+       target="_blank" rel="noopener noreferrer" class="share-btn twitter">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" ...></svg>
+      Twitter
+    </a>
+
+    <a href="mailto:?subject=<%= encodeURIComponent(shareTitle) %>&body=<%= encodeURIComponent(`Mira ${shareLabel}: ${fullUrl}`) %>"
+       class="share-btn email">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" ...></svg>
+      Email
+    </a>
+  </div>
+</div>

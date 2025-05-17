@@ -9,18 +9,23 @@
 <%- include('includes/header', { description: 'Descubre próximos eventos, retiros y encuentros en nuestra comunidad.' }) %>
 
 <main class="events-page">
+
   <div class="container">
-    <div class="filters">
-      <div class="filter-group">
-        <label for="event-type">Tipo de Evento:</label>
-        <select id="event-type" onchange="window.location.href='/events?type=' + this.value">
-          <option value="all" <%= selectedType === 'all' ? 'selected' : '' %>>Todos los Eventos</option>
-          <% eventTypes.forEach(type => { %>
-            <option value="<%= type %>" <%= selectedType === type ? 'selected' : '' %>><%= type %></option>
-          <% }) %>
-        </select>
-      </div>
+  <div class="filters">
+    <div class="filter-group">
+      <label for="event-type">Tipo de Evento:</label>
+      <select id="event-type" onchange="window.location.href='/events?type=' + this.value">
+        <option value="all" <%= selectedType === 'all' ? 'selected' : '' %>>Todos los Eventos</option>
+        <% eventTypes.forEach(type => { %>
+          <option value="<%= type %>" <%= selectedType === type ? 'selected' : '' %>><%= type %></option>
+        <% }) %>
+      </select>
+      <a href="/calendar" class="btn btn-outline-secondary ml-3">
+        Ver Calendario
+      </a>
     </div>
+  </div>
+
     
     <% if (events.length > 0) { %>
       <div class="events-list">

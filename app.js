@@ -1,4 +1,4 @@
-// app.js
+// app.js - Updated with SEO routes
 import express from 'express';
 import mongoose from 'mongoose';
 import path from 'path';
@@ -18,6 +18,7 @@ import eventRoutes from './routes/eventRoutes.js';
 import reflectionRoutes from './routes/reflectionRoutes.js';
 import testimonialRoutes from './routes/testimonialRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import seoRoutes from './routes/seoRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -80,6 +81,9 @@ app.use('/events', eventRoutes);
 app.use('/reflections', reflectionRoutes);
 app.use('/testimonials', testimonialRoutes);
 app.use('/users', userRoutes);
+
+// SEO routes (sitemap.xml and robots.txt) - these must come before the 404 handler
+app.use('/', seoRoutes);
 
 // 404 Error handler
 app.use((req, res) => {

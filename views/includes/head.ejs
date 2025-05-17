@@ -1,17 +1,64 @@
-<!-- views/includes/head.ejs -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %> | Comunidad Emaús</title>
-  
+
+  <%
+    const baseUrl = (typeof req !== 'undefined' && req?.protocol && req?.get)
+      ? `${req.protocol}://${req.get('host')}${req.originalUrl}`
+      : 'https://www.jesucristoresucito.org';
+    const shareUrl = baseUrl;
+
+    const shareTitle = typeof reflection !== 'undefined' && reflection?.title
+      ? reflection.title
+      : typeof testimonial !== 'undefined' && testimonial?.title
+      ? testimonial.title
+      : typeof event !== 'undefined' && event?.title
+      ? event.title
+      : title || 'Comunidad Emaús';
+
+    const shareDescription = typeof reflection !== 'undefined' && reflection?.description
+      ? reflection.description
+      : typeof testimonial !== 'undefined' && testimonial?.description
+      ? testimonial.description
+      : typeof event !== 'undefined' && event?.description
+      ? event.description
+      : 'Una comunidad de fe y crecimiento personal en Cristo.';
+  %>
+
+  <!-- Canonical & Robots -->
+  <link rel="canonical" href="<%= shareUrl %>">
+  <meta name="robots" content="index, follow">
+
+  <!-- Favicon -->
+  <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+
+  <!-- Meta SEO -->
+  <meta name="description" content="<%= shareDescription %>">
+  <meta name="author" content="Comunidad Emaús">
+  <meta name="keywords" content="Emaús, comunidad cristiana, reflexiones, eventos, testimonios, iglesia, fe, espiritualidad">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="<%= shareTitle %>">
+  <meta property="og:description" content="<%= shareDescription %>">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="<%= shareUrl %>">
+  <meta property="og:site_name" content="Comunidad Emaús">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="<%= shareTitle %>">
+  <meta name="twitter:description" content="<%= shareDescription %>">
+  <meta name="twitter:site" content="@emauscomunidad">
+
   <!-- Base styles -->
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/nav.css">
   <link rel="stylesheet" href="/css/header.css">
   <link rel="stylesheet" href="/css/footer.css">
-  
+
   <!-- Page-specific styles -->
   <% if (typeof pageCss !== 'undefined' && pageCss) { %>
     <% pageCss.forEach(css => { %>
