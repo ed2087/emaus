@@ -5,18 +5,16 @@ import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Testimonials list
-router.get('/', testimonialController.getTestimonials);
+// API routes MUST come first
+router.get('/api/featured', testimonialController.getFeaturedTestimonials);
+router.get('/api/:id', testimonialController.getTestimonialJson);
 
-// Submit a testimonial form
+// Main routes
+router.get('/', testimonialController.getTestimonials);
 router.get('/submit', testimonialController.getSubmitForm);
 router.post('/submit', auth.isAuthenticated, testimonialController.submitTestimonial);
 
-// Single testimonial
+// Parameterized routes LAST
 router.get('/:id', testimonialController.getTestimonial);
-
-// API routes for fetch() calls
-router.get('/api/featured', testimonialController.getFeaturedTestimonials);
-router.get('/api/:id', testimonialController.getTestimonialJson);
 
 export default router;

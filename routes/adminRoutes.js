@@ -65,4 +65,15 @@ router.post('/backup', auth.hasRole(['admin']), adminController.createBackup);
 router.get('/settings', auth.hasRole(['admin']), adminController.getSettings);
 router.post('/settings', auth.hasRole(['admin']), adminController.updateSettings);
 
+
+// Chats management
+router.get('/chats', adminController.getChats);
+router.get('/chats/new', adminController.getNewChat);
+router.get('/chats/edit/:id', adminController.getEditChat);
+router.post('/chats', adminController.postChat);
+router.put('/chats/:id', adminController.updateChat);
+router.delete('/chats/:id', auth.hasRole(['admin']), adminController.deleteChat);
+router.get('/users/search', adminController.searchUsers);
+router.get('/users/:id', adminController.getUser);
+
 export default router;

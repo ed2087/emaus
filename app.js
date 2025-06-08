@@ -19,6 +19,7 @@ import reflectionRoutes from './routes/reflectionRoutes.js';
 import testimonialRoutes from './routes/testimonialRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import seoRoutes from './routes/seoRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -80,6 +81,7 @@ app.use('/comments', commentRoutes);
 app.use('/events', eventRoutes);
 app.use('/reflections', reflectionRoutes);
 app.use('/testimonials', testimonialRoutes);
+app.use('/chat', chatRoutes);
 app.use('/users', userRoutes);
 
 // SEO routes (sitemap.xml and robots.txt) - these must come before the 404 handler
