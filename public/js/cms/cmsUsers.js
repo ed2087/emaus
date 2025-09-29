@@ -2,23 +2,23 @@
 document.addEventListener('DOMContentLoaded', function() {
   // Initialize users management functionality
   
+  // ============================================
+  // USER LIST PAGE FUNCTIONALITY
+  // ============================================
+  
   // Handle status filter
   const statusFilter = document.getElementById('status-filter');
   if (statusFilter) {
     statusFilter.addEventListener('change', function() {
       const status = this.value;
-      
-      // Get current URL parameters
       const urlParams = new URLSearchParams(window.location.search);
       
-      // Update or add filter parameter
       if (status !== 'all') {
         urlParams.set('filter', status);
       } else {
         urlParams.delete('filter');
       }
       
-      // Redirect to filtered URL
       window.location.href = `/admin/users${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
     });
   }
@@ -28,18 +28,14 @@ document.addEventListener('DOMContentLoaded', function() {
   if (roleFilter) {
     roleFilter.addEventListener('change', function() {
       const role = this.value;
-      
-      // Get current URL parameters
       const urlParams = new URLSearchParams(window.location.search);
       
-      // Update or add role parameter
       if (role !== 'all') {
         urlParams.set('role', role);
       } else {
         urlParams.delete('role');
       }
       
-      // Redirect to filtered URL
       window.location.href = `/admin/users${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
     });
   }
@@ -49,14 +45,11 @@ document.addEventListener('DOMContentLoaded', function() {
   const searchButton = searchInput?.nextElementSibling;
   
   if (searchInput && searchButton) {
-    // Search on button click
-    searchButton.addEventListener('click', function() {
-      performSearch();
-    });
+    searchButton.addEventListener('click', performSearch);
     
-    // Search on Enter key
     searchInput.addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
+        e.preventDefault();
         performSearch();
       }
     });
@@ -66,117 +59,198 @@ document.addEventListener('DOMContentLoaded', function() {
     const query = searchInput.value.trim();
     if (query === '') return;
     
-    // Get current URL parameters
     const urlParams = new URLSearchParams(window.location.search);
-    
-    // Update or add search parameter
     urlParams.set('search', query);
     
-    // Redirect to search URL
     window.location.href = `/admin/users?${urlParams.toString()}`;
   }
   
-  // Handle delete buttons
-  const deleteButtons = document.querySelectorAll('.delete-btn');
-  if (deleteButtons.length > 0) {
-    const modal = document.getElementById('delete-modal');
-    const confirmButton = modal?.querySelector('.confirm-delete');
-    const cancelButton = modal?.querySelector('.cancel-delete');
-    const closeButton = modal?.querySelector('.close-modal');
-    
-    let currentItemId = null;
-    
-    deleteButtons.forEach(button => {
-      button.addEventListener('click', function() {
-        const itemId = this.getAttribute('data-id');
-        currentItemId = itemId;
+  // ============================================
+  // USER FORM PAGE FUNCTIONALITY
+  // ============================================
+  
+  // Quick approve button
+  const quickApproveBtn = document.querySelector('.quick-approve-btn');
+  if (quickApproveBtn) {
+    quickApproveBtn.addEventListener('click', function() {
+      const isVerifiedCheckbox = document.getElementById('isVerified');
+      const isActiveCheckbox = document.getElementById('isActive');
+      
+      if (isVerifiedCheckbox && isActiveCheckbox) {
+        isVerifiedCheckbox.checked = true;
+        isActiveCheckbox.checked = true;
         
-        // Show the modal
-        modal.classList.add('active');
+        if (confirm('¿Aprobar y activar este usuario? El usuario podrá iniciar sesión inmediatamente.')) {
+          document.querySelector('form').submit();
+        }
+      }
+    });
+  }
+  
+  // Form validation
+  const userForm = document.querySelector('.user-form');
+  if (userForm) {
+    userForm.addEventListener('submit', function(e) {
+      const requiredFields = this.querySelectorAll('[required]');
+      let missingFields = [];
+      
+      requiredFields.forEach(field => {
+        if (!field.value || field.value.trim() === '') {
+          const label = field.previousElementSibling?.textContent || field.name;
+          missingFields.push(label.replace('*', '').trim());
+          
+          // Add visual indicator
+          field.closest('.form-group')?.classList.add('field-missing');
+        } else {
+          // Remove visual indicator if field is filled
+          field.closest('.form-group')?.classList.remove('field-missing');
+        }
+      });
+      
+      if (missingFields.length > 0) {
+        e.preventDefault();
+        alert('Por favor completa los siguientes campos requeridos:\n\n' + missingFields.join('\n'));
+        
+        // Scroll to first missing field
+        const firstMissing = this.querySelector('.field-missing');
+        if (firstMissing) {
+          firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        return false;
+      }
+      
+      // Email validation
+      const emailField = this.querySelector('input[type="email"]');
+      if (emailField && emailField.value) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(emailField.value)) {
+          e.preventDefault();
+          alert('Por favor ingresa un correo electrónico válido.');
+          emailField.focus();
+          return false;
+        }
+      }
+      
+      // Phone validation (basic)
+      const phoneFields = this.querySelectorAll('input[type="tel"]');
+      phoneFields.forEach(field => {
+        if (field.value && field.value.replace(/\D/g, '').length < 10) {
+          e.preventDefault();
+          alert('Por favor ingresa un número de teléfono válido (mínimo 10 dígitos).');
+          field.focus();
+          return false;
+        }
       });
     });
     
-    // Handle modal buttons
-    if (modal && confirmButton && cancelButton && closeButton) {
-      confirmButton.addEventListener('click', function() {
-        if (!currentItemId) return;
-        
-        // Send delete request
-        fetch(`/admin/users/${currentItemId}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Failed to delete user');
-            }
-            return response.json();
-          })
-          .then(result => {
-            if (result.success) {
-              // Remove the item from the DOM
-              const row = document.querySelector(`tr[data-id="${currentItemId}"]`);
-              if (row) {
-                row.remove();
-              }
-              
-              // Close the modal
-              modal.classList.remove('active');
-              
-              // Show success message
-              showNotification('User deleted successfully');
-            } else {
-              alert(result.message || 'Failed to delete user');
-            }
-          })
-          .catch(error => {
-            console.error('Error deleting user:', error);
-            alert('An error occurred while deleting the user. Please try again.');
-          });
-      });
-      
-      // Close modal when cancel button is clicked
-      cancelButton.addEventListener('click', function() {
-        modal.classList.remove('active');
-      });
-      
-      // Close modal when X button is clicked
-      closeButton.addEventListener('click', function() {
-        modal.classList.remove('active');
-      });
-      
-      // Close modal when clicking outside
-      modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-          modal.classList.remove('active');
+    // Real-time field validation
+    const requiredInputs = userForm.querySelectorAll('[required]');
+    requiredInputs.forEach(input => {
+      input.addEventListener('blur', function() {
+        if (this.value && this.value.trim() !== '') {
+          this.closest('.form-group')?.classList.remove('field-missing');
         }
       });
-    }
+    });
   }
   
-  // Helper function to show notification
-  function showNotification(message) {
+  // ============================================
+  // DELETE USER FUNCTIONALITY
+  // ============================================
+  
+  // Handle inline delete buttons in user list
+  const deleteButtons = document.querySelectorAll('.delete-btn');
+  deleteButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      const userId = this.getAttribute('data-id');
+      const userName = this.getAttribute('data-name') || 'este usuario';
+      
+      if (confirm(`¿Estás seguro de que quieres eliminar a "${userName}"?\n\nEsta acción eliminará:\n- La cuenta del usuario\n- Todos sus comentarios\n- Todo el contenido relacionado\n\nEsta acción NO se puede deshacer.`)) {
+        if (confirm('Confirmación final: ¿Realmente deseas eliminar este usuario?')) {
+          deleteUser(userId);
+        }
+      }
+    });
+  });
+  
+  // Delete user function
+  function deleteUser(userId) {
+    fetch(`/admin/users/${userId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        showNotification('Usuario eliminado exitosamente', 'success');
+        
+        // Remove row from table if on list page
+        const row = document.querySelector(`tr[data-id="${userId}"]`);
+        if (row) {
+          row.style.opacity = '0';
+          setTimeout(() => row.remove(), 300);
+        }
+        
+        // Redirect to users list if on edit page
+        if (window.location.pathname.includes('/edit/')) {
+          setTimeout(() => {
+            window.location.href = '/admin/users';
+          }, 1500);
+        }
+      } else {
+        showNotification(data.message || 'Error al eliminar usuario', 'error');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      showNotification('Error al eliminar usuario. Por favor intenta de nuevo.', 'error');
+    });
+  }
+  
+  // Make deleteUser available globally for inline onclick handlers
+  window.deleteUser = function(userId, userName) {
+    if (confirm(`¿Estás seguro de que quieres eliminar a "${userName}"?\n\nEsta acción eliminará:\n- La cuenta del usuario\n- Todos sus comentarios\n- Todo el contenido relacionado\n\nEsta acción NO se puede deshacer.`)) {
+      if (confirm('Confirmación final: ¿Realmente deseas eliminar este usuario?')) {
+        deleteUser(userId);
+      }
+    }
+  };
+  
+  // ============================================
+  // NOTIFICATION SYSTEM
+  // ============================================
+  
+  function showNotification(message, type = 'success') {
+    // Remove any existing notifications
+    const existingNotification = document.querySelector('.notification');
+    if (existingNotification) {
+      existingNotification.remove();
+    }
+    
+    // Create notification element
     const notification = document.createElement('div');
-    notification.className = 'notification';
+    notification.className = `notification ${type}`;
     notification.textContent = message;
     
+    // Add to body
     document.body.appendChild(notification);
     
-    // Show notification
+    // Trigger animation
     setTimeout(() => {
       notification.classList.add('active');
     }, 10);
     
-    // Hide and remove notification after 3 seconds
+    // Remove after 3 seconds
     setTimeout(() => {
       notification.classList.remove('active');
-      
-      // Remove from DOM after animation
-      setTimeout(() => {
-        notification.remove();
-      }, 300);
+      setTimeout(() => notification.remove(), 300);
     }, 3000);
   }
+  
+  // Make notification function globally available
+  window.showNotification = showNotification;
 });
