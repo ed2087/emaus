@@ -18,6 +18,9 @@
         <li><a href="/testimonials" class="<%= typeof path !== 'undefined' && path && path.startsWith('/testimonials') ? 'active' : '' %>">Testimonios</a></li>
         <li><a href="/events" class="<%= typeof path !== 'undefined' && path && path.startsWith('/events') ? 'active' : '' %>">Eventos</a></li>
         <li><a href="/announcements" class="<%= typeof path !== 'undefined' && path && path.startsWith('/announcements') ? 'active' : '' %>">Anuncios</a></li>
+        <% if (typeof user !== 'undefined' && user) { %>
+          <li><a href="/chat" class="<%= typeof path !== 'undefined' && path && path.startsWith('/chat') ? 'active' : '' %>">Chat</a></li>
+        <% } %>
       </ul>
       
       <div class="nav-auth">

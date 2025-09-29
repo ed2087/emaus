@@ -2,20 +2,69 @@
 <%
   const pageCss = ['cms', 'cms-users'];
   const pageScripts = ['cms/cmsUsers'];
+  
+  // Calculate profile completeness
+  const requiredFields = [
+    userData.firstName,
+    userData.lastName,
+    userData.email,
+    userData.birthday,
+    userData.gender,
+    userData.maritalStatus,
+    userData.church,
+    userData.isMember,
+    userData.phone,
+    userData.emergencyName,
+    userData.emergencyPhone
+  ];
+  const completedFields = requiredFields.filter(field => field && field.toString().trim() !== '').length;
+  const completeness = Math.round((completedFields / requiredFields.length) * 100);
+  
+  // Determine completeness status
+  let completenessClass = 'status-danger';
+  let completenessText = 'Incomplete';
+  if (completeness === 100) {
+    completenessClass = 'status-success';
+    completenessText = 'Complete';
+  } else if (completeness >= 70) {
+    completenessClass = 'status-warning';
+    completenessText = 'Mostly Complete';
+  }
 %>
 
 <%- include('../includes/head', { pageCss }) %>
 
 <div class="admin-layout">
-  <!-- Admin sidebar (omitted for brevity) -->
   <%- include('../includes/admin-sidebar') %>
-  <!-- Admin content -->
+  
   <main class="admin-content">
     <header class="admin-header">
-      <h1>Editar Usuario</h1>
+      <div class="header-title">
+        <h1>
+          <% if (userData.isVerified) { %>
+            Editar Usuario
+          <% } else { %>
+            Revisar y Aprobar Usuario
+          <% } %>
+        </h1>
+        <div class="header-meta">
+          <span class="badge <%= completenessClass %>">
+            <%= completenessText %> (<%= completeness %>%)
+          </span>
+          <% if (!userData.isVerified) { %>
+            <span class="badge status-warning">Pendiente de Aprobación</span>
+          <% } %>
+          <% if (!userData.isActive) { %>
+            <span class="badge status-danger">Cuenta Desactivada</span>
+          <% } %>
+        </div>
+      </div>
       <div class="header-actions">
         <a href="/admin/users" class="btn btn-outline">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
           Volver a Usuarios
         </a>
       </div>
@@ -28,96 +77,517 @@
         </div>
       <% } %>
       
-      <form action="/admin/users/<%= userData._id %>?_method=PUT" method="POST" class="form-layout">
+      <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert-success">
+          <%= success %>
+        </div>
+      <% } %>
+      
+      <form action="/admin/users/<%= userData._id %>?_method=PUT" method="POST" class="form-layout user-form">
         <div class="form-grid">
+          <!-- Main Content Column -->
           <div class="form-main">
+            
+            <!-- Profile Completeness Alert -->
+            <% if (completeness < 100) { %>
+              <div class="alert alert-warning profile-alert">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                  <line x1="12" y1="9" x2="12" y2="13"></line>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <div>
+                  <strong>Perfil Incompleto:</strong> Este usuario no ha completado todos los campos requeridos. 
+                  Revisa la información antes de aprobar.
+                </div>
+              </div>
+            <% } %>
+            
+            <!-- Personal Information Section -->
             <div class="form-section">
-              <h2>Información Personal</h2>
+              <div class="section-header">
+                <h2>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  Información Personal
+                </h2>
+              </div>
               
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="firstName">Nombre</label>
+              <div class="form-row form-row-2">
+                <div class="form-group <%= !userData.firstName ? 'field-missing' : '' %>">
+                  <label for="firstName">
+                    Nombre <span class="required">*</span>
+                    <% if (!userData.firstName) { %>
+                      <span class="field-warning">Campo requerido faltante</span>
+                    <% } %>
+                  </label>
                   <input 
                     type="text" 
                     id="firstName" 
                     name="firstName" 
-                    value="<%= userData.firstName %>" 
+                    value="<%= userData.firstName || '' %>" 
                     required
+                    placeholder="Ingrese el nombre"
                   >
                 </div>
                 
-                <div class="form-group">
-                  <label for="lastName">Apellido</label>
+                <div class="form-group <%= !userData.lastName ? 'field-missing' : '' %>">
+                  <label for="lastName">
+                    Apellido <span class="required">*</span>
+                    <% if (!userData.lastName) { %>
+                      <span class="field-warning">Campo requerido faltante</span>
+                    <% } %>
+                  </label>
                   <input 
                     type="text" 
                     id="lastName" 
                     name="lastName" 
-                    value="<%= userData.lastName %>" 
+                    value="<%= userData.lastName || '' %>" 
                     required
+                    placeholder="Ingrese el apellido"
                   >
                 </div>
               </div>
               
-              <div class="form-group">
-                <label for="email">Correo Electrónico</label>
-                <input 
-                  type="email" 
-                  id="email" 
-                  name="email" 
-                  value="<%= userData.email %>" 
-                  required
-                >
+              <div class="form-row form-row-3">
+                <div class="form-group <%= !userData.birthday ? 'field-missing' : '' %>">
+                  <label for="birthday">
+                    Fecha de Nacimiento <span class="required">*</span>
+                    <% if (!userData.birthday) { %>
+                      <span class="field-warning">Campo requerido faltante</span>
+                    <% } %>
+                  </label>
+                  <input 
+                    type="date" 
+                    id="birthday" 
+                    name="birthday" 
+                    value="<%= userData.birthday ? new Date(userData.birthday).toISOString().split('T')[0] : '' %>" 
+                    required
+                  >
+                  <% if (userData.birthday) { %>
+                    <div class="input-help">
+                      Edad: <%= Math.floor((Date.now() - new Date(userData.birthday)) / (365.25 * 24 * 60 * 60 * 1000)) %> años
+                    </div>
+                  <% } %>
+                </div>
+                
+                <div class="form-group <%= !userData.gender ? 'field-missing' : '' %>">
+                  <label for="gender">
+                    Género <span class="required">*</span>
+                    <% if (!userData.gender) { %>
+                      <span class="field-warning">Campo requerido faltante</span>
+                    <% } %>
+                  </label>
+                  <select id="gender" name="gender" required>
+                    <option value="">Seleccione...</option>
+                    <option value="male" <%= userData.gender === 'male' ? 'selected' : '' %>>Masculino</option>
+                    <option value="female" <%= userData.gender === 'female' ? 'selected' : '' %>>Femenino</option>
+                    <option value="prefer_not_to_say" <%= userData.gender === 'prefer_not_to_say' ? 'selected' : '' %>>Prefiero no decir</option>
+                  </select>
+                </div>
+                
+                <div class="form-group <%= !userData.maritalStatus ? 'field-missing' : '' %>">
+                  <label for="maritalStatus">
+                    Estado Civil <span class="required">*</span>
+                    <% if (!userData.maritalStatus) { %>
+                      <span class="field-warning">Campo requerido faltante</span>
+                    <% } %>
+                  </label>
+                  <select id="maritalStatus" name="maritalStatus" required>
+                    <option value="">Seleccione...</option>
+                    <option value="single" <%= userData.maritalStatus === 'single' ? 'selected' : '' %>>Soltero/a</option>
+                    <option value="married" <%= userData.maritalStatus === 'married' ? 'selected' : '' %>>Casado/a</option>
+                    <option value="divorced" <%= userData.maritalStatus === 'divorced' ? 'selected' : '' %>>Divorciado/a</option>
+                    <option value="widowed" <%= userData.maritalStatus === 'widowed' ? 'selected' : '' %>>Viudo/a</option>
+                  </select>
+                </div>
               </div>
             </div>
-          </div>
-          
-          <div class="form-sidebar">
+            
+            <!-- Contact Information Section -->
             <div class="form-section">
-              <h2>Configuración de Cuenta</h2>
+              <div class="section-header">
+                <h2>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                  </svg>
+                  Información de Contacto
+                </h2>
+              </div>
+              
+              <div class="form-row form-row-2">
+                <div class="form-group <%= !userData.email ? 'field-missing' : '' %>">
+                  <label for="email">
+                    Correo Electrónico <span class="required">*</span>
+                    <% if (!userData.email) { %>
+                      <span class="field-warning">Campo requerido faltante</span>
+                    <% } %>
+                  </label>
+                  <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    value="<%= userData.email || '' %>" 
+                    required
+                    placeholder="correo@ejemplo.com"
+                  >
+                  <div class="input-help">
+                    El correo electrónico debe ser único en el sistema
+                  </div>
+                </div>
+                
+                <div class="form-group <%= !userData.phone ? 'field-missing' : '' %>">
+                  <label for="phone">
+                    Teléfono <span class="required">*</span>
+                    <% if (!userData.phone) { %>
+                      <span class="field-warning">Campo requerido faltante</span>
+                    <% } %>
+                  </label>
+                  <input 
+                    type="tel" 
+                    id="phone" 
+                    name="phone" 
+                    value="<%= userData.phone || '' %>" 
+                    required
+                    placeholder="(123) 456-7890"
+                  >
+                </div>
+              </div>
+            </div>
+            
+            <!-- Church & Community Section -->
+            <div class="form-section">
+              <div class="section-header">
+                <h2>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                  </svg>
+                  Iglesia y Comunidad
+                </h2>
+              </div>
+              
+              <div class="form-row form-row-2">
+                <div class="form-group <%= !userData.church ? 'field-missing' : '' %>">
+                  <label for="church">
+                    Nombre de la Iglesia <span class="required">*</span>
+                    <% if (!userData.church) { %>
+                      <span class="field-warning">Campo requerido faltante</span>
+                    <% } %>
+                  </label>
+                  <input 
+                    type="text" 
+                    id="church" 
+                    name="church" 
+                    value="<%= userData.church || '' %>" 
+                    required
+                    placeholder="Ingrese el nombre de la iglesia"
+                  >
+                </div>
+                
+                <div class="form-group <%= !userData.isMember ? 'field-missing' : '' %>">
+                  <label for="isMember">
+                    ¿Es Miembro? <span class="required">*</span>
+                    <% if (!userData.isMember) { %>
+                      <span class="field-warning">Campo requerido faltante</span>
+                    <% } %>
+                  </label>
+                  <select id="isMember" name="isMember" required>
+                    <option value="">Seleccione...</option>
+                    <option value="yes" <%= userData.isMember === 'yes' ? 'selected' : '' %>>Sí</option>
+                    <option value="no" <%= userData.isMember === 'no' ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+              </div>
               
               <div class="form-group">
-                <label for="role">Rol</label>
+                <label for="referral">
+                  ¿Cómo nos conoció? (Referencia)
+                  <span class="optional">(Opcional)</span>
+                </label>
+                <input 
+                  type="text" 
+                  id="referral" 
+                  name="referral" 
+                  value="<%= userData.referral || '' %>"
+                  placeholder="Amigo, familia, redes sociales, etc."
+                >
+                <div class="input-help">
+                  Información útil para entender cómo llegó el usuario a la comunidad
+                </div>
+              </div>
+            </div>
+            
+            <!-- Emergency Contact Section -->
+            <div class="form-section">
+              <div class="section-header">
+                <h2>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                  </svg>
+                  Contacto de Emergencia
+                </h2>
+              </div>
+              
+              <div class="form-row form-row-2">
+                <div class="form-group <%= !userData.emergencyName ? 'field-missing' : '' %>">
+                  <label for="emergencyName">
+                    Nombre del Contacto <span class="required">*</span>
+                    <% if (!userData.emergencyName) { %>
+                      <span class="field-warning">Campo requerido faltante</span>
+                    <% } %>
+                  </label>
+                  <input 
+                    type="text" 
+                    id="emergencyName" 
+                    name="emergencyName" 
+                    value="<%= userData.emergencyName || '' %>" 
+                    required
+                    placeholder="Nombre completo del contacto"
+                  >
+                </div>
+                
+                <div class="form-group <%= !userData.emergencyPhone ? 'field-missing' : '' %>">
+                  <label for="emergencyPhone">
+                    Teléfono de Emergencia <span class="required">*</span>
+                    <% if (!userData.emergencyPhone) { %>
+                      <span class="field-warning">Campo requerido faltante</span>
+                    <% } %>
+                  </label>
+                  <input 
+                    type="tel" 
+                    id="emergencyPhone" 
+                    name="emergencyPhone" 
+                    value="<%= userData.emergencyPhone || '' %>" 
+                    required
+                    placeholder="(123) 456-7890"
+                  >
+                </div>
+              </div>
+              
+              <div class="alert alert-info">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                Esta información es crítica para eventos y retiros. Asegúrate de que sea válida.
+              </div>
+            </div>
+            
+          </div>
+          
+          <!-- Sidebar Column -->
+          <div class="form-sidebar">
+            
+            <!-- Account Status Section -->
+            <div class="form-section sidebar-sticky">
+              <div class="section-header">
+                <h2>Estado de la Cuenta</h2>
+              </div>
+              
+              <div class="status-overview">
+                <div class="status-item">
+                  <span class="status-label">Registro:</span>
+                  <span class="status-value">
+                    <%= new Date(userData.createdAt).toLocaleDateString('es-ES', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    }) %>
+                  </span>
+                </div>
+                
+                <div class="status-item">
+                  <span class="status-label">Completitud:</span>
+                  <span class="status-value">
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: <%= completeness %>%"></div>
+                    </div>
+                    <%= completeness %>%
+                  </span>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="role">Rol del Usuario</label>
                 <select id="role" name="role" required>
                   <option value="user" <%= userData.role === 'user' ? 'selected' : '' %>>Usuario</option>
                   <option value="moderator" <%= userData.role === 'moderator' ? 'selected' : '' %>>Moderador</option>
                   <option value="admin" <%= userData.role === 'admin' ? 'selected' : '' %>>Administrador</option>
                 </select>
+                <div class="input-help">
+                  Los moderadores pueden aprobar contenido. Los admins tienen control total.
+                </div>
               </div>
               
-              <div class="form-group checkbox-group">
-                <label>
+              <div class="checkbox-group-vertical">
+                <label class="checkbox-label">
                   <input 
                     type="checkbox" 
-                    name="isVerified" 
+                    name="isVerified"
+                    id="isVerified"
                     <%= userData.isVerified ? 'checked' : '' %>
                   >
-                  Verificado
+                  <span class="checkbox-content">
+                    <strong>Verificado</strong>
+                    <small>El usuario puede iniciar sesión y acceder al sitio</small>
+                  </span>
                 </label>
-                <div class="input-help">Cuando está marcado, el usuario puede iniciar sesión</div>
-              </div>
-              
-              <div class="form-group checkbox-group">
-                <label>
+                
+                <label class="checkbox-label">
                   <input 
                     type="checkbox" 
-                    name="isActive" 
+                    name="isActive"
+                    id="isActive"
                     <%= userData.isActive ? 'checked' : '' %>
                   >
-                  Activo
+                  <span class="checkbox-content">
+                    <strong>Cuenta Activa</strong>
+                    <small>Desmarcar para deshabilitar la cuenta temporalmente</small>
+                  </span>
                 </label>
-                <div class="input-help">Cuando no está marcado, la cuenta de usuario está deshabilitada</div>
+              </div>
+              
+              <% if (!userData.isVerified || !userData.isActive) { %>
+                <div class="quick-actions">
+                  <button 
+                    type="button" 
+                    class="btn btn-success btn-block quick-approve-btn"
+                    onclick="quickApprove()"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Aprobar y Activar Usuario
+                  </button>
+                </div>
+              <% } %>
+            </div>
+            
+            <!-- Admin Notes Section -->
+            <div class="form-section">
+              <div class="section-header">
+                <h2>Notas del Administrador</h2>
+              </div>
+              
+              <div class="form-group">
+                <label for="adminNotes">
+                  Notas Internas
+                  <span class="optional">(Solo visible para administradores)</span>
+                </label>
+                <textarea 
+                  id="adminNotes" 
+                  name="adminNotes" 
+                  rows="4"
+                  placeholder="Agregar notas sobre este usuario, decisiones de verificación, etc."
+                ><%= userData.adminNotes || '' %></textarea>
               </div>
             </div>
             
-            <div class="form-actions">
-              <button type="submit" class="btn btn-primary">Actualizar Usuario</button>
-              <a href="/admin/users" class="btn btn-outline">Cancelar</a>
+            <!-- Form Actions -->
+            <div class="form-actions-sidebar">
+              <button type="submit" class="btn btn-primary btn-block">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                  <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                  <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                Guardar Cambios
+              </button>
+              <a href="/admin/users" class="btn btn-outline btn-block">
+                Cancelar
+              </a>
             </div>
+            
+            <!-- Danger Zone -->
+            <% if (user && user._id.toString() !== userData._id.toString()) { %>
+              <div class="form-section danger-zone">
+                <div class="section-header">
+                  <h2>Zona de Peligro</h2>
+                </div>
+                
+                <button 
+                  type="button" 
+                  class="btn btn-danger btn-block"
+                  onclick="deleteUser('<%= userData._id %>', '<%= userData.firstName %> <%= userData.lastName %>')"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  Eliminar Usuario
+                </button>
+                <div class="input-help text-center">
+                  Esta acción no se puede deshacer
+                </div>
+              </div>
+            <% } %>
+            
           </div>
         </div>
       </form>
     </div>
   </main>
 </div>
+
+<script>
+// Quick approve function
+function quickApprove() {
+  document.getElementById('isVerified').checked = true;
+  document.getElementById('isActive').checked = true;
+  
+  // Show confirmation
+  if (confirm('¿Aprobar y activar este usuario? El usuario podrá iniciar sesión inmediatamente.')) {
+    document.querySelector('form').submit();
+  }
+}
+
+// Delete user function
+function deleteUser(userId, userName) {
+  if (confirm(`¿Estás seguro de que quieres eliminar al usuario "${userName}"?\n\nEsta acción eliminará:\n- La cuenta del usuario\n- Todos sus comentarios\n- Todo el contenido relacionado\n\nEsta acción NO se puede deshacer.`)) {
+    if (confirm('Confirmación final: ¿Realmente deseas eliminar este usuario?')) {
+      fetch(`/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          window.location.href = '/admin/users';
+        } else {
+          alert('Error al eliminar usuario: ' + data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error al eliminar usuario');
+      });
+    }
+  }
+}
+
+// Form validation
+document.querySelector('form').addEventListener('submit', function(e) {
+  const requiredFields = this.querySelectorAll('[required]');
+  let missingFields = [];
+  
+  requiredFields.forEach(field => {
+    if (!field.value || field.value.trim() === '') {
+      missingFields.push(field.previousElementSibling.textContent);
+    }
+  });
+  
+  if (missingFields.length > 0) {
+    e.preventDefault();
+    alert('Por favor completa los siguientes campos requeridos:\n\n' + missingFields.join('\n'));
+    return false;
+  }
+});
+</script>
 
 <%- include('../includes/footer', { pageScripts }) %>

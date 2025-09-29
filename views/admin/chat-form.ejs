@@ -1,0 +1,323 @@
+<%
+  const pageCss = ['cms', 'cms-chats'];
+%>
+
+<%- include('../includes/head', { pageCss }) %>
+
+<div class="admin-layout">
+  <%- include('../includes/admin-sidebar') %>
+  
+  <main class="admin-main">
+    <div class="admin-header">
+      <h1><%= chat ? 'Edit Chat' : 'Add New Chat' %></h1>
+      <a href="/admin/chats" class="btn btn-outline">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Back to Chats
+      </a>
+    </div>
+    
+    <div class="admin-content">
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-error">
+          <%= error %>
+        </div>
+      <% } %>
+      
+      <form method="POST" action="<%= chat ? `/admin/chats/${chat._id}?_method=PUT` : '/admin/chats' %>" class="form-container" id="chat-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Chat Name *</label>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              value="<%= chat ? chat.name : '' %>" 
+              required 
+              maxlength="100"
+              placeholder="Enter chat name"
+            >
+            <div class="input-help">Maximum 100 characters</div>
+          </div>
+          
+          <div class="form-group">
+            <label for="type">Chat Type</label>
+            <select id="type" name="type" onchange="toggleMembersField()">
+              <option value="public" <%= (!chat || chat.type === 'public') ? 'selected' : '' %>>Public</option>
+              <option value="private" <%= (chat && chat.type === 'private') ? 'selected' : '' %>>Private</option>
+            </select>
+            <div class="input-help">Public chats are visible to all members, private chats are invite-only</div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea 
+            id="description" 
+            name="description" 
+            rows="3" 
+            maxlength="500"
+            placeholder="Enter chat description (optional)"
+          ><%= chat ? chat.description : '' %></textarea>
+          <div class="input-help">Maximum 500 characters</div>
+        </div>
+        
+        <!-- User Search Component for Private Chats -->
+        <div class="form-group" id="members-field" style="<%= (!chat || chat.type === 'public') ? 'display: none;' : '' %>">
+          <label>Private Chat Members</label>
+          
+          <!-- Search Input -->
+          <div class="user-search-container">
+            <input 
+              type="text" 
+              id="user-search" 
+              placeholder="Type name or email to search users..."
+              autocomplete="off"
+            >
+            <div class="search-results" id="search-results"></div>
+          </div>
+          
+          <!-- Selected Members Display -->
+          <div class="selected-members" id="selected-members">
+            <div class="selected-members-header">Selected Members:</div>
+            <div class="selected-members-list" id="selected-members-list">
+              <!-- Selected members will appear here -->
+            </div>
+          </div>
+          
+          <!-- Hidden input to store selected user IDs -->
+          <input type="hidden" id="members" name="members" value="<%= chat && chat.members ? chat.members.map(m => m._id || m).join(',') : '' %>">
+          
+          <div class="input-help">Search and select users to add to this private chat. Leave empty for public chats.</div>
+        </div>
+        
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input 
+              type="checkbox" 
+              id="isActive" 
+              name="isActive" 
+              <%= (!chat || chat.isActive) ? 'checked' : '' %>
+            >
+            <label for="isActive">Active</label>
+          </div>
+          <div class="input-help">Inactive chats won't be visible to users</div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <%= chat ? 'Update Chat' : 'Create Chat' %>
+          </button>
+          <a href="/admin/chats" class="btn btn-outline">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<script>
+// Chat form functionality
+class ChatFormManager {
+  constructor() {
+    this.selectedUsers = new Map(); // Store selected users
+    this.searchTimeout = null;
+    this.init();
+  }
+  
+  init() {
+    this.bindEvents();
+    this.loadExistingMembers();
+  }
+  
+  bindEvents() {
+    const searchInput = document.getElementById('user-search');
+    const searchResults = document.getElementById('search-results');
+    
+    // Search input with debouncing
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(this.searchTimeout);
+      const query = e.target.value.trim();
+      
+      if (query.length < 2) {
+        searchResults.innerHTML = '';
+        searchResults.style.display = 'none';
+        return;
+      }
+      
+      this.searchTimeout = setTimeout(() => {
+        this.searchUsers(query);
+      }, 300);
+    });
+    
+    // Hide search results when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.user-search-container')) {
+        searchResults.style.display = 'none';
+      }
+    });
+    
+    // Show search results when focusing on input
+    searchInput.addEventListener('focus', () => {
+      if (searchResults.innerHTML) {
+        searchResults.style.display = 'block';
+      }
+    });
+  }
+  
+  async searchUsers(query) {
+    try {
+      const response = await fetch(`/admin/users/search?q=${encodeURIComponent(query)}`);
+      const users = await response.json();
+      this.displaySearchResults(users);
+    } catch (error) {
+      console.error('Error searching users:', error);
+    }
+  }
+  
+  displaySearchResults(users) {
+    const searchResults = document.getElementById('search-results');
+    
+    if (users.length === 0) {
+      searchResults.innerHTML = '<div class="no-results">No users found</div>';
+      searchResults.style.display = 'block';
+      return;
+    }
+    
+    const resultsHTML = users
+      .filter(user => !this.selectedUsers.has(user._id)) // Don't show already selected users
+      .map(user => `
+        <div class="search-result-item" data-user-id="${user._id}">
+          <div class="user-info">
+            <strong>${this.escapeHtml(user.firstName)} ${this.escapeHtml(user.lastName)}</strong>
+            <span class="user-email">(${this.escapeHtml(user.email)})</span>
+          </div>
+        </div>
+      `).join('');
+    
+    searchResults.innerHTML = resultsHTML;
+    searchResults.style.display = 'block';
+    
+    // Add click handlers
+    searchResults.addEventListener('click', (e) => {
+      const resultItem = e.target.closest('.search-result-item');
+      if (resultItem) {
+        const userId = resultItem.getAttribute('data-user-id');
+        const user = users.find(u => u._id === userId);
+        if (user) {
+          this.addUser(user);
+          document.getElementById('user-search').value = '';
+          searchResults.innerHTML = '';
+          searchResults.style.display = 'none';
+        }
+      }
+    });
+  }
+  
+  addUser(user) {
+    this.selectedUsers.set(user._id, user);
+    this.updateSelectedMembersDisplay();
+    this.updateHiddenInput();
+  }
+  
+  removeUser(userId) {
+    this.selectedUsers.delete(userId);
+    this.updateSelectedMembersDisplay();
+    this.updateHiddenInput();
+  }
+  
+  updateSelectedMembersDisplay() {
+    const container = document.getElementById('selected-members-list');
+    const selectedMembersDiv = document.getElementById('selected-members');
+    
+    if (this.selectedUsers.size === 0) {
+      selectedMembersDiv.style.display = 'none';
+      return;
+    }
+    
+    selectedMembersDiv.style.display = 'block';
+    
+    const membersHTML = Array.from(this.selectedUsers.values()).map(user => `
+      <div class="selected-member-item">
+        <span class="member-info">
+          <strong>${this.escapeHtml(user.firstName)} ${this.escapeHtml(user.lastName)}</strong>
+          <span class="member-email">(${this.escapeHtml(user.email)})</span>
+        </span>
+        <button type="button" class="remove-member-btn" data-user-id="${user._id}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    `).join('');
+    
+    container.innerHTML = membersHTML;
+    
+    // Add remove handlers
+    container.addEventListener('click', (e) => {
+      if (e.target.closest('.remove-member-btn')) {
+        const btn = e.target.closest('.remove-member-btn');
+        const userId = btn.getAttribute('data-user-id');
+        this.removeUser(userId);
+      }
+    });
+  }
+  
+  updateHiddenInput() {
+    const hiddenInput = document.getElementById('members');
+    const userIds = Array.from(this.selectedUsers.keys());
+    hiddenInput.value = userIds.join(',');
+  }
+  
+  async loadExistingMembers() {
+    const hiddenInput = document.getElementById('members');
+    const memberIds = hiddenInput.value.split(',').filter(id => id.trim());
+    
+    if (memberIds.length === 0) return;
+    
+    try {
+      // Load existing members for edit mode
+      for (const memberId of memberIds) {
+        const response = await fetch(`/admin/users/${memberId}`);
+        if (response.ok) {
+          const user = await response.json();
+          this.selectedUsers.set(user._id, user);
+        }
+      }
+      this.updateSelectedMembersDisplay();
+    } catch (error) {
+      console.error('Error loading existing members:', error);
+    }
+  }
+  
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+}
+
+// Toggle members field visibility
+function toggleMembersField() {
+  const typeSelect = document.getElementById('type');
+  const membersField = document.getElementById('members-field');
+  
+  if (typeSelect.value === 'private') {
+    membersField.style.display = 'block';
+  } else {
+    membersField.style.display = 'none';
+  }
+}
+
+// Initialize form manager
+let chatFormManager;
+document.addEventListener('DOMContentLoaded', function() {
+  chatFormManager = new ChatFormManager();
+});
+</script>
+
+<%- include('../includes/footer') %>

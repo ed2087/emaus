@@ -1,5 +1,11 @@
 // controllers/announcementController.js
+import mongoose from 'mongoose';
 import Announcement from '../models/Announcement.js';
+
+// Helper function to validate ObjectId
+const isValidObjectId = (id) => {
+  return mongoose.Types.ObjectId.isValid(id) && /^[0-9a-fA-F]{24}$/.test(id);
+};
 
 // Get all announcements
 const getAnnouncements = async (req, res) => {
@@ -36,7 +42,7 @@ const getAnnouncements = async (req, res) => {
         hasPrev: page > 1
       },
       user: req.user || null,
-        path: req.path
+      path: req.path
     });
   } catch (error) {
     console.error('Error getting announcements:', error);
@@ -44,7 +50,7 @@ const getAnnouncements = async (req, res) => {
       title: 'Server Error',
       message: 'An error occurred while loading announcements.',
       user: req.user || null,
-        path: req.path
+      path: req.path
     });
   }
 };
@@ -52,7 +58,19 @@ const getAnnouncements = async (req, res) => {
 // Get single announcement
 const getAnnouncement = async (req, res) => {
   try {
-    const announcement = await Announcement.findById(req.params.id);
+    const { id } = req.params;
+    
+    // Validate ObjectId before querying
+    if (!isValidObjectId(id)) {
+      return res.status(404).render('error', {
+        title: 'Not Found',
+        message: 'Announcement not found.',
+        user: req.user || null,
+        path: req.path
+      });
+    }
+    
+    const announcement = await Announcement.findById(id);
     
     if (!announcement || !announcement.isActive) {
       return res.status(404).render('error', {
@@ -70,7 +88,6 @@ const getAnnouncement = async (req, res) => {
         message: 'This announcement has expired.',
         user: req.user || null,
         path: req.path
-        
       });
     }
     
@@ -78,7 +95,7 @@ const getAnnouncement = async (req, res) => {
       title: announcement.title,
       announcement,
       user: req.user || null,
-        path: req.path
+      path: req.path
     });
   } catch (error) {
     console.error('Error getting announcement:', error);
@@ -86,7 +103,7 @@ const getAnnouncement = async (req, res) => {
       title: 'Server Error',
       message: 'An error occurred while loading the announcement.',
       user: req.user || null,
-        path: req.path
+      path: req.path
     });
   }
 };
@@ -124,7 +141,17 @@ const getLatestAnnouncements = async (req, res) => {
 // Get single announcement as JSON
 const getAnnouncementJson = async (req, res) => {
   try {
-    const announcement = await Announcement.findById(req.params.id);
+    const { id } = req.params;
+    
+    // Validate ObjectId before querying
+    if (!isValidObjectId(id)) {
+      return res.status(404).json({
+        success: false,
+        message: 'Announcement not found.'
+      });
+    }
+    
+    const announcement = await Announcement.findById(id);
     
     if (!announcement || !announcement.isActive) {
       return res.status(404).json({

@@ -1,0 +1,133 @@
+<%
+  const pageCss = ['chat'];
+  const pageScripts = ['chat'];
+%>
+
+<%- include('includes/head', { pageCss }) %>
+
+<%- include('includes/nav') %>
+
+<main class="chat-page">
+  <div class="container">
+    <div class="chat-container">
+      <!-- Chat Sidebar -->
+      <div class="chat-sidebar">
+        <div class="chat-sidebar-header">
+          <h3>Salas de Chat</h3>
+          <% if (user.role === 'admin' || user.role === 'moderator') { %>
+            <a href="/admin/chats/new" class="btn btn-sm btn-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Nueva Sala
+            </a>
+          <% } %>
+        </div>
+        
+        <div class="chat-rooms">
+          <div class="chat-rooms-section">
+            <h4>Salas Públicas</h4>
+            <div class="chat-rooms-list" id="public-chats">
+              <div class="loading">Cargando salas...</div>
+            </div>
+          </div>
+          
+          <div class="chat-rooms-section">
+            <h4>Salas Privadas</h4>
+            <div class="chat-rooms-list" id="private-chats">
+              <div class="empty-state">
+                <p>No hay salas privadas</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Chat Main Area -->
+      <div class="chat-main">
+        <div class="chat-welcome" id="chat-welcome">
+          <div class="welcome-content">
+            <h2>Bienvenido al Chat de Emaús</h2>
+            <p>Selecciona una sala para comenzar a conversar con la comunidad.</p>
+          </div>
+        </div>
+        
+        <div class="chat-active" id="chat-active" style="display: none;">
+          <!-- Chat Header -->
+          <div class="chat-header">
+            <div class="chat-info">
+              <h3 id="current-chat-name">Sala General</h3>
+              <p id="current-chat-description">Conversación general de la comunidad</p>
+            </div>
+            <div class="chat-actions">
+              <button class="btn btn-sm btn-outline" id="chat-members-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                Miembros
+              </button>
+            </div>
+          </div>
+          
+          <!-- Messages Container -->
+          <div class="messages-container" id="messages-container">
+            <div class="messages-list" id="messages-list">
+              <div class="loading">Cargando mensajes...</div>
+            </div>
+            
+            <!-- New Messages Indicator -->
+            <div class="new-messages-indicator" id="new-messages-indicator" style="display: none;">
+              <button class="btn btn-sm btn-primary">
+                Nuevos mensajes ↓
+              </button>
+            </div>
+          </div>
+          
+          <!-- Message Input -->
+          <div class="message-input-container">
+            <div class="reply-preview" id="reply-preview" style="display: none;">
+              <div class="reply-content">
+                <span class="reply-to">Respondiendo a <strong id="reply-author"></strong>:</span>
+                <span class="reply-text" id="reply-text"></span>
+              </div>
+              <button class="reply-cancel" id="reply-cancel">×</button>
+            </div>
+            
+            <form class="message-input-form" id="message-form">
+              <div class="input-group">
+                <button type="button" class="btn btn-icon" id="gif-picker-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                </button>
+                
+                <input 
+                  type="text" 
+                  id="message-input" 
+                  placeholder="Escribe tu mensaje..."
+                  maxlength="2000"
+                  autocomplete="off"
+                >
+                
+                <button type="submit" class="btn btn-primary" id="send-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                  </svg>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script data-user-id="<%= user._id %>"></script>
+
+<%- include('includes/footer', { pageScripts }) %>

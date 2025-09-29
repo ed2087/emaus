@@ -3,7 +3,7 @@ import express from 'express';
 import adminController from '../controllers/adminController.js';
 import auth from '../middleware/auth.js';
 import adminCounters from '../middleware/adminCounters.js';
-
+import { upload } from '../middleware/cloudinary.js';
 const router = express.Router();
 
 // Middleware to check if user is admin or moderator
@@ -64,5 +64,22 @@ router.post('/backup', auth.hasRole(['admin']), adminController.createBackup);
 // Settings (admin only)
 router.get('/settings', auth.hasRole(['admin']), adminController.getSettings);
 router.post('/settings', auth.hasRole(['admin']), adminController.updateSettings);
+
+
+// Chats management
+router.get('/chats', adminController.getChats);
+router.get('/chats/new', adminController.getNewChat);
+router.get('/chats/edit/:id', adminController.getEditChat);
+router.post('/chats', adminController.postChat);
+router.put('/chats/:id', adminController.updateChat);
+router.delete('/chats/:id', auth.hasRole(['admin']), adminController.deleteChat);
+router.get('/users/search', adminController.searchUsers);
+router.get('/users/:id', adminController.getUser);
+
+// Reflections management with file upload
+router.get('/reflections/new', adminController.getNewReflection);
+router.get('/reflections/edit/:id', adminController.getEditReflection);
+router.post('/reflections', upload.array('imageFiles', 3), adminController.postReflection);
+router.put('/reflections/:id', upload.array('imageFiles', 3), adminController.updateReflection);
 
 export default router;

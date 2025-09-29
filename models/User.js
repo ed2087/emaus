@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema({
     required: true
   },
 
+  adminNotes: { 
+    type: String, 
+    default: '' 
+  },
+
   // Church-related info
   church: { type: String, required: true },
   isMember: {
